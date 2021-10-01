@@ -23,13 +23,7 @@ Us.
 
 The basic workflow is as follows:
 
-- Create an ``IMF`` object for your model (optional)
-- Create an ``SSP`` object with the IMF (optional)
-- Create one or more ``Scenario`` objects (optional)
-- Create ``PEGASE`` instance, passing in the above
-- Invoke ``.generate()`` on the ``PEGASE`` object, which generates the data files
-- Access the results via the ``colors()`` and ``spectra()`` methods
-- Save the resulting object with ``save_to_file()`` so it can be later loaded with ``PEGASE.from_file()`` and save on generation time.
+- Creme.
 
 All of this can be done in one line, see the examples below.
 
@@ -57,26 +51,6 @@ To see the built-in defaults, execute ``PEGASE.list_defaults()``. You can use th
   python -c "import pypegase as pp; pp.PEGASE.list_defaults()" > ~/.pypegase
 
 This will create an file for you that you can edit should you wish to override some of the defaults. (Note: If pypegase.py is not in your system's library dir, you will need it in the current directory or you can add the location of pypegase.py to to ``PYTHONPATH`` environment variable.)
-
-Spectra and colors
-------------------
-
-Generated spectra and colors data can be obtained with the ``spectra()`` and ``colors()`` methods respectively. In each case the result will be an Astropy `table.Table <http://docs.astropy.org/en/stable/table/index.html>`_  with a row for each timestep.
-
-Both of these methods can take a list of columns as the ``cols`` parameter. For spectra especially the resulting table is very large and it may make sense to filter the results in this way. The available column names are the wavelengths and spectral lines as they appear in the xxx_spectra.dat file as well as the following::
-
-        time m_gal m_star m_wd m_nsbh m_substellar m_gas z_ism z_stars_mass
-        z_stars_bl l_bol od_v l_dust_l_bol sfr phot_lyman rate_snii rate_snia
-	age_star_mass age_star_lbol
-
-Note that column names must match PEGASE's file output exactly - so for instance  "100200." will work, but
-"100200" will not.
-
-The available column names can be viewed with ``peg_instance.spectra().colnames()`` (and the same for colors).
-
-The table returned by these methods can be further filtered with the ``time_lower`` and ``time_upper`` keywords; for example, to return only rows with a time between 100 and 13000 Myr, call ``colors(time_lower=100, time_upper=13e3)``.
-
-These methods return a table which can be accessed as ``mytable['colname']`` (returns entire column) or ``mytable['colname'][n]`` (returns column _colname_ at row _n_).
 
 Examples
 --------

@@ -8,7 +8,6 @@ from regions import PixCoord, CirclePixelRegion
 from copy import copy
 from scipy.interpolate import interp1d
 from pathlib import Path
-import scipy.ndimage
 
 from astropy.io import fits, ascii
 from astropy.coordinates import Angle
@@ -33,7 +32,6 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 home = str(Path.home())
 path = home + "/Dropbox/PhD/paper_2/"
 
-resampling = 100  # Number of resampling for the bootstrap error estimation of AM (currently unused)
 instrument = ["NS", "AO", "Merged"]
 types = ["inten", "vel", "velerr"]  # H alpha intensity, vel map, HST continuum and vel error
 rmax_NS = 4.5# approximation of the extent of the data based on the 2D maps
@@ -54,16 +52,6 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
 
     # Use the optimized parameters to calculate AM
     vel_fit = my_funcs.my_vel_model_for_plot(x, y, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit, None, None, i, vel_data)
-
-    # fig, (ax1,ax2,ax3) = plt.subplots(ncols=3)
-    # ax1.imshow(vel_fit[7], origin="lower")
-    # ax1.set_title("model")
-    # ax2.imshow(vel_fit[2], origin="lower")
-    # ax2.set_title("face-on model")
-    # ax3.imshow(vel_fit[1], origin="lower")
-    # ax3.set_title("vel fac")
-    # plt.show()
-    #sys.exit()
 
     r_deprojected = copy(vel_fit[6])
 
@@ -837,52 +825,52 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
     # Make all plots:
     make_plots()
 
-    # results = ascii.read(f'{path}/results/results_table.csv')
-    # results.add_row([galaxy,
-    #                  instrument[j],
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(j_observed),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_2rh),
-    #                  '{:.1f}'.format(j_3rh),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_approx),
-    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.1f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit)))))),
-    #                  '{:.1f}'.format(j_1rh),
-    #                  '{:.1f}'.format(x0_fit),
-    #                  '{:.1f}'.format(y0_fit),
-    #                  '{:.1f}'.format(x0_fit),
-    #                  '{:.1f}'.format(y0_fit),
-    #                  '{:.1f}'.format(x0_phot),
-    #                  '{:.1f}'.format(y0_phot)
-    #                  ])
-    # ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
-    #
-    # results = ascii.read(f'{path}/results/results_table_short.csv')
-    # results.add_row([galaxy,
-    #                  instrument[j],
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(j_3rh),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_approx),
-    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit))))))
-    #                  ])
-    # ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
+    results = ascii.read(f'{path}/results/results_table.csv')
+    results.add_row([galaxy,
+                     instrument[j],
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(j_observed),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_2rh),
+                     '{:.1f}'.format(j_3rh),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_approx),
+                     '{:.2f}'.format(r_d_min * kpc_per_pix),
+                     '{:.1f}'.format(r_d_min * kpc_per_pix),
+                     '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit)))))),
+                     '{:.1f}'.format(j_1rh),
+                     '{:.1f}'.format(x0_fit),
+                     '{:.1f}'.format(y0_fit),
+                     '{:.1f}'.format(x0_fit),
+                     '{:.1f}'.format(y0_fit),
+                     '{:.1f}'.format(x0_phot),
+                     '{:.1f}'.format(y0_phot)
+                     ])
+    ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
+
+    results = ascii.read(f'{path}/results/results_table_short.csv')
+    results.add_row([galaxy,
+                     instrument[j],
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.2f}'.format(r_d_min * kpc_per_pix),
+                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(j_3rh),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_approx),
+                     '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit))))))
+                     ])
+    ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
 
     print(colored("Finished", "green"), colored(galaxy, "green"), colored(instrument[j], "green"))
 

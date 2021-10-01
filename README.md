@@ -2,44 +2,24 @@
 
 ![logo](https://user-images.githubusercontent.com/14315715/135545635-6c22fbbe-3ee5-4201-a8bc-9c0d4e562978.jpeg)
 
-PyPegase 0.1
-============
-
 Introduction
 ------------
 
-PyPegase provides a convenient way to generate galaxy models using the `PEGASE <http://www2.iap.fr/users/fioc/PEGASE.html>`_ version 2 code. It provides a wrapper class that encapsulates
-the parameters to, and results from the PEGASE binaries. This makes it much simpler to explore the paramater space and examine the outputs from
-the resulting models.
+CONDOR provides a convenient way to generate galaxy models using the `PEGASE <http://www2.iap.fr/users/fioc/PEGASE.html>`_ version 2 code. I.
 
-PyPegase assumes you have a clean installation of the PEGASE2 code, and have compiled the Fortran sources to produce executable binaries called ``SSPs``,
+Ped ``SSPs``,
 ``scenarios``, ``spectra``, ``calib`` and ``colors``.
 
-For more on PEGASE see the docs: http://arxiv.org/abs/astro-ph/9912179
+For more on CONDOR see: https://arxiv.org/abs/2109.10614
 
-Installation and configuration
+Installation and configuration (not available)
 ------------------------------
 
-If you use pip, install with::
-
-  pip install pypegase
-
-alternatively, get from github::
-
-  git clone https://github.com/coljac/pypegase.git
-
-and add the directory to your ``PYTHONPATH`` environment variable.
-
-You will also need to point PyPegase to your PEGASE2 directory, the location of the binaries (such as ``SSPs``, etc). The best way to do this is with a ``PEGASE_HOME`` environment variable, but can be done at runtime by setting ``PEGASE.pegase_dir = "<path to PEGASE>"``.
-
-You can also create a ``.pypegase`` file to override the module's defaults - see defaults_ below.
 
 Usage
 -----
 
-Usage of PyPegase is centred on the PEGASE class which encapsulates a run of the PEGASE code. Other classes such
-as ``IMF``, ``SSP``, ``SFR`` and ``Scenario`` wrap the inputs to the PEGASE code, though use of
-these is in most cases optional.
+Us.
 
 The basic workflow is as follows:
 

@@ -1,8 +1,6 @@
 # Import relevant libraries/modules
 from __future__ import print_function
-import gc
-import sys
-import argparse
+import gc, sys
 import numpy as np
 from termcolor import colored
 import warnings
@@ -10,7 +8,6 @@ from regions import PixCoord, CirclePixelRegion
 from copy import copy
 from scipy.interpolate import interp1d
 from pathlib import Path
-from multiprocessing import Pool
 import scipy.ndimage
 
 from astropy.io import fits, ascii
@@ -19,7 +16,6 @@ from astropy.coordinates import Angle
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import corner
-import emcee
 import cmasher as cmr
 
 from modules import fitting_functions as my_funcs

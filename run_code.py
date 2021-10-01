@@ -25,22 +25,14 @@ import argparse
 import numpy as np
 from termcolor import colored
 import warnings
-from regions import PixCoord, CirclePixelRegion
-from copy import copy
-import zeus
-import emcee
-import corner
-from multiprocessing import Pool
 from pathlib import Path
 import pandas as pd
 from scipy import ndimage, misc
 
 from astropy.io import fits, ascii
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 
 from copy import copy
-from astropy.convolution import AiryDisk2DKernel, Moffat2DKernel, convolve, Gaussian2DKernel
 
 from cosmology_calc import angulardistance
 import plot_and_save_results as make_plots

@@ -154,9 +154,9 @@ def load_previous_runs(i, type_of_data):
     y0_ns = results.y0_ns[i * 3 + dat]
     x0_ao = results.x0_ao[i * 3 + dat]
     y0_ao = results.y0_ao[i * 3 + dat]
-    r_d_pix = results.r_d[i * 3 + dat]
+    #r_d_pix = results.r_d[i * 3 + dat]
 
-    return pa, inc, rflat, vflat, x0_ns, y0_ns, x0_ao, y0_ao, r_d_pix
+    return pa, inc, rflat, vflat, x0_ns, y0_ns, x0_ao, y0_ao#, r_d_pix
 
 
 if __name__ == "__main__":

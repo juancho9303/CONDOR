@@ -11,7 +11,6 @@ from pathlib import Path
 
 from astropy.io import fits, ascii
 from astropy.coordinates import Angle
-#import pypdfplot.backend
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import corner
@@ -20,7 +19,6 @@ import cmasher as cmr
 from modules import fitting_functions as my_funcs
 from cosmology_calc import angulardistance
 
-from modules.fitting_functions import my_vel_model
 from scipy.ndimage.filters import gaussian_filter1d
 from scipy.ndimage import gaussian_filter
 from astropy.convolution import convolve, Gaussian2DKernel, AiryDisk2DKernel
@@ -42,11 +40,32 @@ import matplotlib.font_manager as fm
 fontprops = fm.FontProperties(size=14)
 
 
-def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit, x0_phot, y0_phot, x, y, z,
-               r_d, NS_kernel, AO_kernel, pixscale, resolution_ratio, kpc_per_pix, vel_data, vmap_er, inten_data,
-               den_data, sigma_ns, sigma_x_ns, sigma_y_ns, theta_ns, sigma_ao, q_ao, theta_ao, sampler, steps,
-               hst_pixscale, type, kernel_HST):
+def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_per_pix, sigma_ns, sigma_ao,
+               sampler, steps, hst_pixscale, type, kernel_HST, gal, maps):
 
+    pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit = results
+
+    galaxy =  gal.name
+    z = gal.z_ao
+    sigma_x_ns = gal.sigma_x_ns
+    sigma_y_ns = gal.sigma_y_ns
+    theta_ns = gal.theta_ns
+    q_ao = gal.q_ao
+    theta_ao = gal.theta_ao
+
+    if j==0:
+        vel_data = maps[0]
+        inten_data = maps[1]
+        vmap_er = maps[2]
+    elif j==1:
+        vel_data = maps[3]
+        inten_data = maps[4]
+        vmap_er = maps[5]
+    AO_kernel = maps[6]
+    NS_kernel = maps[7]
+    den_data = maps[8]
+
+    y, x = np.indices([vel_data.shape[0], vel_data.shape[1]])
     size = [~np.isnan(vel_data)]
     vflat_max = np.nanmax(vel_data)
 
@@ -323,6 +342,128 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
             plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}_corner.pdf", overwrite=True,
                         bbox_inches='tight')
 
+        #######################################
+        #######################################
+
+            # input_params = [pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit, x0_fit, y0_fit]
+            # constant_inputs = [vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z,
+            #                    x0_fit,
+            #                    y0_fit, inc_fit, rflat_fit, vflat_max]
+            # vel_fit_for_plot = np.nanmax(np.abs(vel_fit[0]))
+            #
+            # def plot_with_HST_map(galaxy, den_data, inten_data, vel_data, input_params, constant_inputs,
+            #                       vel_fit_for_plot, r_3rh, sigma_x_ns, sigma_y_ns, theta_ns,
+            #                       sigma_ao, q_ao, theta_ao, rad, ang_fit):
+            #     # Plot with the HST map
+            #     fig, (ax0, ax4, ax1, ax2, ax3) = plt.subplots(figsize=(14, 4), ncols=5, nrows=1)
+            #
+            #     fontprops = fm.FontProperties(size=15)
+            #     ax0.imshow(den_data, cmap=cmr.sunburst, origin='lower', interpolation='nearest')
+            #     kpc_per_pix_HST = hst_pixscale / 3600 / 180 * np.pi * constant_inputs[2]* 1000
+            #     scale = AnchoredSizeBar(ax0.transData, 5 * kpc_per_pix_HST, r"$5\,\, \mathrm{kpc}$", 'lower right',
+            #                             pad=0.1, color='white', frameon=False, size_vertical=0.4,
+            #                             fontproperties=fontprops)
+            #     arcsec = AnchoredSizeBar(ax0.transData, 0.5 / hst_pixscale, r'$0.5"$', 'lower left',
+            #                              pad=0.1, color='white', frameon=False, size_vertical=0.4,
+            #                              fontproperties=fontprops)
+            #     ax0.set_xlim(-0.5, den_data.shape[1] - 0.5)
+            #     ax0.set_ylim(-0.5, den_data.shape[0] - 0.5)
+            #
+            #     ax0.add_artist(scale)
+            #     ax0.add_artist(arcsec)
+            #     ax0.text(0.03, 0.97, r"$\mathrm{%s}$" % galaxy, c="w", size=14, rotation=0., ha="left", va="top",
+            #              transform=ax0.transAxes)
+            #     ax0.text(0.03, 0.88, r"$\textit{I-}\mathrm{band},\, z=1.52$", c="w", size=14, rotation=0., ha="left",
+            #              va="top", transform=ax0.transAxes)
+            #     ax0.set_title(r"$\mathit{HST\,\,}\mathrm{image}$", size=20)
+            #
+            #     ax4.imshow(inten_data, cmap=cmr.sunburst, origin='lower', interpolation='nearest')
+            #     ax4.set_xlim(-0.5, inten_data.shape[1] - 0.5)
+            #     ax4.set_ylim(-0.5, inten_data.shape[0] - 0.5)
+            #     if j == 0:
+            #         ax4.add_patch(
+            #             my_funcs.draw_elliptical_psf(sigma_x_ns, sigma_y_ns, theta=Angle(theta_ns - 45, 'deg')))
+            #     elif j == 1:
+            #         ax4.add_patch(
+            #             my_funcs.draw_elliptical_psf(sigma_ao, sigma_ao * q_ao, theta=Angle(theta_ao - 45, 'deg')))
+            #
+            #     ax4.set_title(r"$\mathrm{H\alpha\,\, intensity}$", size=20)
+            #
+            #     for ax in [ax1, ax2, ax3, ax0, ax4]:
+            #         ax.set_xticks([])
+            #         ax.set_yticks([])
+            #         ax.set_facecolor('black')
+            #
+            #     # 3" halo to check the scale
+            #     center_halo = PixCoord(x0_fit, y0_fit)
+            #     halo = CirclePixelRegion(center=center_halo, radius=(r_3rh))
+            #     patch_halo = halo.as_artist(facecolor='w', edgecolor='w', color='w', fill=False, lw=3)
+            #     ax1.add_patch(patch_halo)
+            #     ax1.text(0.02, 0.98, r'$\mathrm{r}=3r_\mathrm{eff}$', c="w", size=20, rotation=0., ha="left", va="top",
+            #              transform=ax1.transAxes)
+            #     ax1.imshow(vel_data, cmap=mpl.cm.RdYlBu_r, vmin=vel_fit_for_plot * (-1),
+            #                vmax=vel_fit_for_plot, origin='lower', interpolation='nearest')
+            #     ax1.set_xlim(-0.5, vel_data.shape[1] - 0.5)
+            #     ax1.set_ylim(-0.5, vel_data.shape[0] - 0.5)
+            #
+            #     ax1.plot(rad * np.cos(ang_fit) + x0_fit, rad * np.sin(ang_fit) + y0_fit, ls='--', c="red",
+            #              lw=3)  # Zero-vel
+            #     ax1.plot(-rad * np.sin(ang_fit) + x0_fit, rad * np.cos(ang_fit) + y0_fit, ls='--', c="lime",
+            #              lw=3)  # Major ax
+            #     if j == 0:
+            #         ax1.add_patch(
+            #             my_funcs.draw_elliptical_psf(sigma_x_ns, sigma_y_ns, theta=Angle(theta_ns - 45, 'deg')))
+            #     elif j == 1:
+            #         ax1.add_patch(
+            #             my_funcs.draw_elliptical_psf(sigma_ao, sigma_ao * q_ao, theta=Angle(theta_ao - 45, 'deg')))
+            #     ax1.set_title(r"$v_\mathrm{rot}\,\,\mathrm{data}$", size=20)
+            #
+            #     if j == 0:
+            #         vel_model = my_funcs.ns_maps(i, input_params, constant_inputs)
+            #
+            #     if j == 1:
+            #         vel_model = my_funcs.ao_maps(i, input_params, constant_inputs)
+            #
+            #     ax2.imshow(vel_model, cmap=mpl.cm.RdYlBu_r, vmin=vel_fit_for_plot * (-1),
+            #                vmax=vel_fit_for_plot, origin='lower', interpolation='nearest')
+            #     ax2.plot(rad * np.cos(ang_fit) + x0_fit, rad * np.sin(ang_fit) + y0_fit, ls='--', c="red",
+            #              lw=3)  # Zero-vel
+            #     ax2.plot(-rad * np.sin(ang_fit) + x0_fit, rad * np.cos(ang_fit) + y0_fit, ls='--', c="lime",
+            #              lw=3)  # Major ax PA
+            #     cs = ax2.contour(x, y, vel_fit[0], cmap=mpl.cm.RdYlBu_r, interpolation='none')
+            #     ax2.contour(cs, colors='k')
+            #     ax2.set_xlim(-0.5, vel_data.shape[1] - 0.5)
+            #     ax2.set_ylim(-0.5, vel_data.shape[0] - 0.5)
+            #     ax2.set_title(r"$v_\mathrm{rot}\,\,\mathrm{model}$", size=20)
+            #
+            #     plot = ax3.imshow(vel_data - vel_model, cmap=mpl.cm.RdYlBu_r, vmin=np.max(vel_fit_for_plot) * (-1),
+            #                       vmax=np.max(vel_fit_for_plot), origin='lower', interpolation='nearest')
+            #     ax3.set_xlim(-0.5, vel_data.shape[1] - 0.5)
+            #     ax3.set_ylim(-0.5, vel_data.shape[0] - 0.5)
+            #     ax3.text(1.4, 0.5, r'$v\mathrm{\, [km/s]}$', size=20, ha='right',
+            #              va='center', rotation='vertical', transform=ax3.transAxes)
+            #     ax3.set_title(r"$v_\mathrm{rot}\,\,\mathrm{residuals}$", size=20)
+            #     cb = plt.colorbar(plot, cax=fig.add_axes([0.9, 0.235, 0.02, 0.52]),
+            #                       ticks=[-vel_fit_for_plot, 0, vel_fit_for_plot], ax=ax1,
+            #                       orientation='vertical')
+            #     cb.ax.set_yticklabels([r"$%d$" % int(-vel_fit_for_plot), r"$0$",
+            #                            r"$%d$" % int(vel_fit_for_plot)])  # horizontal colorbar
+            #     cb.ax.yaxis.set_tick_params(color='black', pad=1, size=4)
+            #     cb.outline.set_visible(True)
+            #     plt.setp(plt.getp(cb.ax.axes, 'yticklabels'), color="black", size=18)
+            #     plt.subplots_adjust(wspace=0.05, hspace=0.05)
+            #
+            #     plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}_with_HST.pdf", overwrite=True,
+            #                 bbox_inches='tight')
+            #     plt.close()
+            #
+            # plot_with_HST_map(galaxy, den_data, inten_data, vel_data, input_params, constant_inputs,
+            #                       vel_fit_for_plot, r_3rh, sigma_x_ns, sigma_y_ns, theta_ns,
+            #                       sigma_ao, q_ao, theta_ao, rad, ang_fit)
+
+        ###############################
+        ###############################
+
         # Plot with the HST map
         fig, (ax0, ax4, ax1, ax2, ax3) = plt.subplots(figsize=(14, 4), ncols=5, nrows=1)
 
@@ -384,7 +525,7 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
         ax1.set_title(r"$v_\mathrm{rot}\,\,\mathrm{data}$", size=20)
 
         input_params = [pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit, x0_fit, y0_fit]
-        constant_inputs = [vel_data, pixscale, angulardistance(z), r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fit,
+        constant_inputs = [vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fit,
                            y0_fit, inc_fit, rflat_fit, vflat_max]
 
         if j == 0:
@@ -456,7 +597,7 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
         ax1.set_title(r"$\mathrm{Data}$", size=28)
 
         input_params = [pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit, x0_fit, y0_fit]
-        constant_inputs = [vel_data, pixscale, angulardistance(z), r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fit,
+        constant_inputs = [vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fit,
                            y0_fit, inc_fit, rflat_fit, vflat_max]
 
         if j==0:
@@ -691,7 +832,7 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
         #     ax1.set_ylabel(r"$\mathrm{AO}$", size=28, rotation=0, ha="right", va="center", labelpad=15)
         #
         # input_params = [pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit, x0_fit, y0_fit]
-        # constant_inputs = [vel_data, pixscale, angulardistance(z), r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fit, y0_fit]
+        # constant_inputs = [vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fit, y0_fit]
         #
         # if j == 0:
         #     vel_model = my_funcs.ns_maps(i, input_params, constant_inputs)
@@ -724,10 +865,10 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
         # vmap_er[np.isnan(vmap_er)] = 0
         #
         # if j == 0:
-        #     vel_model = my_vel_model_for_plot(x, y, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit,
+        #     vel_model = my_funcs.my_vel_model_for_plot(x, y, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit,
         #                              NS_kernel, None, i=i, data=vel_data)[0]
         # if j == 1:
-        #     vel_model = my_vel_model_for_plot(x, y, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit,
+        #     vel_model = my_funcs.     my_vel_model_for_plot(x, y, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit,
         #                              None, AO_kernel, i=i, data=vel_data)[0]
         #
         # # -- Extract the line...
@@ -825,64 +966,84 @@ def individual(i, j, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_f
     # Make all plots:
     make_plots()
 
-    results = ascii.read(f'{path}/results/results_table.csv')
-    results.add_row([galaxy,
-                     instrument[j],
-                     '{:.1f}'.format(pa_fit),
-                     '{:.1f}'.format(pa_fit),
-                     '{:.1f}'.format(inc_fit),
-                     '{:.1f}'.format(inc_fit),
-                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
-                     '{:.1f}'.format(rflat_fit * kpc_per_pix),
-                     '{:.1f}'.format(vflat_fit),
-                     '{:.1f}'.format(vflat_fit),
-                     '{:.1f}'.format(j_observed),
-                     '{:.1f}'.format(j_model),
-                     '{:.1f}'.format(j_model),
-                     '{:.1f}'.format(j_2rh),
-                     '{:.1f}'.format(j_3rh),
-                     '{:.1f}'.format(j_model),
-                     '{:.1f}'.format(j_model),
-                     '{:.1f}'.format(j_approx),
-                     '{:.2f}'.format(r_d_min * kpc_per_pix),
-                     '{:.1f}'.format(r_d_min * kpc_per_pix),
-                     '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit)))))),
-                     '{:.1f}'.format(j_1rh),
-                     '{:.1f}'.format(x0_fit),
-                     '{:.1f}'.format(y0_fit),
-                     '{:.1f}'.format(x0_fit),
-                     '{:.1f}'.format(y0_fit),
-                     '{:.1f}'.format(x0_phot),
-                     '{:.1f}'.format(y0_phot)
-                     ])
-    ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
+    # results = ascii.read(f'{path}/results/results_table.csv')
+    # results.add_row([galaxy,
+    #                  instrument[j],
+    #                  '{:.1f}'.format(pa_fit),
+    #                  '{:.1f}'.format(pa_fit),
+    #                  '{:.1f}'.format(inc_fit),
+    #                  '{:.1f}'.format(inc_fit),
+    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
+    #                  '{:.1f}'.format(rflat_fit * kpc_per_pix),
+    #                  '{:.1f}'.format(vflat_fit),
+    #                  '{:.1f}'.format(vflat_fit),
+    #                  '{:.1f}'.format(j_observed),
+    #                  '{:.1f}'.format(j_model),
+    #                  '{:.1f}'.format(j_model),
+    #                  '{:.1f}'.format(j_2rh),
+    #                  '{:.1f}'.format(j_3rh),
+    #                  '{:.1f}'.format(j_model),
+    #                  '{:.1f}'.format(j_model),
+    #                  '{:.1f}'.format(j_approx),
+    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
+    #                  '{:.1f}'.format(r_d_min * kpc_per_pix),
+    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit)))))),
+    #                  '{:.1f}'.format(j_1rh),
+    #                  '{:.1f}'.format(x0_fit),
+    #                  '{:.1f}'.format(y0_fit),
+    #                  '{:.1f}'.format(x0_fit),
+    #                  '{:.1f}'.format(y0_fit),
+    #                  '{:.1f}'.format(x0_phot),
+    #                  '{:.1f}'.format(y0_phot)
+    #                  ])
+    # ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
+    #
+    # results = ascii.read(f'{path}/results/results_table_short.csv')
+    # results.add_row([galaxy,
+    #                  instrument[j],
+    #                  '{:.1f}'.format(pa_fit),
+    #                  '{:.1f}'.format(inc_fit),
+    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
+    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
+    #                  '{:.1f}'.format(vflat_fit),
+    #                  '{:.1f}'.format(j_3rh),
+    #                  '{:.1f}'.format(j_model),
+    #                  '{:.1f}'.format(j_approx),
+    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit))))))
+    #                  ])
+    # ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
+    #
+    # print(colored("Finished", "green"), colored(galaxy, "green"), colored(instrument[j], "green"))
+    #
+    # gc.collect()
 
-    results = ascii.read(f'{path}/results/results_table_short.csv')
-    results.add_row([galaxy,
-                     instrument[j],
-                     '{:.1f}'.format(pa_fit),
-                     '{:.1f}'.format(inc_fit),
-                     '{:.2f}'.format(r_d_min * kpc_per_pix),
-                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
-                     '{:.1f}'.format(vflat_fit),
-                     '{:.1f}'.format(j_3rh),
-                     '{:.1f}'.format(j_model),
-                     '{:.1f}'.format(j_approx),
-                     '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit))))))
-                     ])
-    ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
-
-    print(colored("Finished", "green"), colored(galaxy, "green"), colored(instrument[j], "green"))
-
-    gc.collect()
 
 
-def combined(i, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit_ns, y0_fit_ns,
-             x0_fit_ao, y0_fit_ao, x0_phot, y0_phot, x_ns, y_ns, x_ao, y_ao, z, r_d,
-             NS_kernel, AO_kernel, pixscale, resolution_ratio, kpc_per_pix, vel_data_ns,
-             vmap_er_ns, vel_data_ao, vmap_er_ao, inten_data_ns, inten_data_ao, den_data, sigma_ns, sigma_x_ns,
-             sigma_y_ns, theta_ns, sigma_ao, q_ao, theta_ao, sampler, steps, hst_pixscale, type, kernel_HST):
+def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_per_pix, sigma_ns, sigma_ao, sampler,
+             steps, hst_pixscale, type_run, kernel_HST, gal, maps):
 
+    pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit_ns, y0_fit_ns, x0_fit_ao, y0_fit_ao = results
+
+    galaxy = gal.name
+    z = gal.z_ao
+    sigma_x_ns = gal.sigma_x_ns
+    sigma_y_ns = gal.sigma_y_ns
+    theta_ns = gal.theta_ns
+    q_ao = gal.q_ao
+    theta_ao = gal.theta_ao
+
+    vel_data_ns = maps[0]
+    inten_data_ns = maps[1]
+    vmap_er_ns = maps[2]
+    vel_data_ao = maps[3]
+    inten_data_ao = maps[4]
+    vmap_er_ao = maps[5]
+    AO_kernel = maps[6]
+    NS_kernel = maps[7]
+    den_data = maps[8]
+
+    y_ns, x_ns = np.indices([vel_data_ns.shape[0], vel_data_ns.shape[1]])
+    y_ao, x_ao = np.indices([vel_data_ao.shape[0], vel_data_ao.shape[1]])
     size_ao = [~np.isnan(vel_data_ao)]
     den_data1 = copy(den_data)
     vflat_max_ns = np.nanmax(vel_data_ns)
@@ -1211,12 +1372,12 @@ def combined(i, galaxy, pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit_ns, y0_fit
         ax1.set_ylim(0, vel_fit_ao[0].shape[0]-0.5)
 
         input_params = [pa_fit, inc_fit, rflat_fit/resolution_ratio, vflat_fit, x0_fit_ns, y0_fit_ns, x0_fit_ao, y0_fit_ao]
-        constant_inputs_ns = [vel_data_ns, pixscale, angulardistance(z), r_d_guess, l0, wav, NS_kernel, None, z,
+        constant_inputs_ns = [vel_data_ns, pixscale, r_d_guess, l0, wav, NS_kernel, None, z,
                               x0_fit_ns, y0_fit_ns, inc_fit, rflat_fit, vflat_max_ns]
         fit_ns = my_funcs.ns_maps(i, input_params, constant_inputs_ns)
 
         input_params = [pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit_ns, y0_fit_ns, x0_fit_ao, y0_fit_ao]
-        constant_inputs_ao = [vel_data_ao, pixscale, angulardistance(z), r_d_guess, l0, wav, None, AO_kernel, z,
+        constant_inputs_ao = [vel_data_ao, pixscale, r_d_guess, l0, wav, None, AO_kernel, z,
                               x0_fit_ao, y0_fit_ao, inc_fit, rflat_fit, vflat_max_ao]
         fit_ao = my_funcs.ao_maps(i, input_params, constant_inputs_ao)
 

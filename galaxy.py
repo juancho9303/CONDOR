@@ -1,5 +1,4 @@
 import numpy as np
-from cosmology_calc import angulardistance
 from modules import fitting_functions as funcs
 
 class Galaxy():

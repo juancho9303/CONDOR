@@ -1,25 +1,18 @@
 # Import relevant libraries/modules
 from __future__ import print_function
-import gc, sys
-import argparse
 import numpy as np
-import warnings
 from plotbin.symmetrize_velfield import symmetrize_velfield
 from plotbin.plot_velfield import plot_velfield
 from regions import PixCoord, CirclePixelRegion, EllipsePixelRegion
 from scipy.interpolate import interp1d
 from scipy import interpolate
 from copy import copy
-from scipy.optimize import curve_fit
-import astropy
-from astropy.convolution import convolve, Gaussian2DKernel
-from scipy import ndimage, misc, special
-from line_profiler import LineProfiler
-import numba
+from astropy.convolution import convolve, convolve_fft, Gaussian2DKernel
+import pyfftw
 
+import numba
 from astropy.io import fits, ascii
-from astropy.modeling import models, fitting
-from astropy import units as u
+from scipy.optimize import curve_fit as cf
 
 import matplotlib
 import matplotlib as mpl
@@ -50,17 +43,6 @@ def surf_mass_den_profile(r, s_d, r_d):
     # and r_d which is the disk scalelength
 
     profile = s_d*(np.exp(-r/r_d))
-
-    return profile
-
-#-----------------------------------------------------------------------------------------------------------------------
-
-def surf_mass_den_profile_for_fadding_effect(r, s_d, r_d):
-
-    # Function that defines the surface mass density profile and depends on s_d which is SMD normalization
-    # and r_d which is the disk scalelength
-
-    profile = s_d*r_d/r**(1.0)
 
     return profile
 
@@ -829,7 +811,6 @@ def lnprob_combine_cube(param, vel_ns, x_ns, y_ns, var_ns, model_ns, constant_in
 #-----------------------------------------------------------------------------------------------------------------------
 #@numba.jit(nopython=True)
 def ns_maps(i, inputs, constant_inputs):
-    from scipy.optimize import curve_fit as cf
 
     pa, inc, rflat, vflat, x0, y0, x0_unsed, y0_unused = inputs
     vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fixed, y0_fixed, inc_fixed, rflat_lim, vflat_max = constant_inputs
@@ -849,6 +830,7 @@ def ns_maps(i, inputs, constant_inputs):
             cube[:, ii, jj] = singlekmos([lc[ii, jj], den_model[ii, jj], 1.79], wav)
 
     for k in range(len(cube[:, 1, 1])):
+        #cube[k] = convolve_fft(cube[k], NS_kernel, preserve_nan=True, normalize_kernel=True, fftn=pyfftw.interfaces.scipy_fft.fft)
         cube[k] = convolve(cube[k], NS_kernel, boundary='extend', preserve_nan=True, normalize_kernel=True)
 
     cube[np.isnan(cube)] = 0.
@@ -860,6 +842,9 @@ def ns_maps(i, inputs, constant_inputs):
 
             p0 = [lc[iii,jjj], den_model[iii,jjj], 1.79]
             output_parameters, covariance_matrix = cf(gaussian, wav, cube[:, iii, jjj], p0=p0)
+            # if iii==12 and jjj==12:
+            #     plt.plot(wav, cube[:, iii, jjj])
+            #     plt.show()
             vel_modelll[iii, jjj] = 3e5 * (output_parameters[0] - l0 ) / output_parameters[0]
 
     vel_modelll[np.isnan(vel_data)] = np.nan
@@ -869,7 +854,6 @@ def ns_maps(i, inputs, constant_inputs):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def ao_maps(i, inputs, constant_inputs):
-    from scipy.optimize import curve_fit as cf
 
     pa, inc, rflat, vflat, x0_unsed, y0_unused, x0, y0 = inputs
     vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fixed, y0_fixed, inc_fixed, rflat_lim, vflat_max = constant_inputs
@@ -908,7 +892,6 @@ def ao_maps(i, inputs, constant_inputs):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def ns_maps_make_cube(i, inputs, constant_inputs):
-    from scipy.optimize import curve_fit as cf
 
     pa, inc, rflat, vflat, x0, y0, x0_unsed, y0_unused = inputs
     vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fixed, y0_fixed, inc_fixed, rflat_lim, vflat_max = constant_inputs
@@ -928,6 +911,7 @@ def ns_maps_make_cube(i, inputs, constant_inputs):
     original_cube = copy(cube)
 
     for k in range(len(cube[:, 1, 1])):
+        #cube[k] = convolve_fft(cube[k], NS_kernel, boundary='extend', preserve_nan=True, normalize_kernel=True)
         cube[k] = convolve(cube[k], NS_kernel, boundary='extend', preserve_nan=True, normalize_kernel=True)
 
 
@@ -936,7 +920,6 @@ def ns_maps_make_cube(i, inputs, constant_inputs):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def ao_maps_make_cube(i, inputs, constant_inputs):
-    from scipy.optimize import curve_fit as cf
 
     pa, inc, rflat, vflat, x0_unsed, y0_unused, x0, y0 = inputs
     vel_data, pixscale, r_d_guess, l0, wav, NS_kernel, AO_kernel, z, x0_fixed, y0_fixed, inc_fixed, rflat_lim, vflat_max = constant_inputs

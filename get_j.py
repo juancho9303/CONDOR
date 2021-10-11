@@ -13,7 +13,7 @@ from multiprocessing import Pool
 from copy import copy
 from cosmology_calc import angulardistance
 import plot_and_save_results as make_plots
-from modules import fitting_functions as my_funcs
+from condor_utils import fitting_functions as my_funcs
 from galaxy import Galaxy
 
 warnings.filterwarnings("ignore")
@@ -27,7 +27,8 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
     resolution_ratio = gal.pixscale_ns / gal.pixscale_ao
 
     l0 = 6562.77 * (1 + gal.z_ao)
-    wav = np.arange(l0 - 101, l0 + 101, 2)
+    #wav = np.arange(l0 - 101, l0 + 101, 2)
+    wav = np.arange(l0 - 30, l0 + 30, 2) #~36 km/s per 2A (z~1.5)
 
     vel_data_ns   = maps[0]
     inten_data_ns = maps[1]
@@ -88,9 +89,9 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
             results = results[0:-2]
             sampler   = None
 
-        save_all = make_plots.individual(i, 0, results, x0_phot, y0_phot, r_d_pix,
-                                         pixscale, resolution_ratio, kpc_per_pix, sigma_ns, sigma_ao, sampler, steps,
-                                         hst_pixscale, type_run, copy(AO_kernel), gal, maps)
+        save_all = make_plots.individual(i, 0, results, x0_phot, y0_phot, r_d_pix, pixscale, resolution_ratio,
+                                         kpc_per_pix, sigma_ns, sigma_ao, sampler, steps, hst_pixscale, type_run,
+                                         copy(AO_kernel), gal, maps)
 
     if res == 'AO':
 

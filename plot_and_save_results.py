@@ -16,7 +16,8 @@ import matplotlib.pyplot as plt
 import corner
 import cmasher as cmr
 
-from modules import fitting_functions as my_funcs
+from condor_utils import fitting_functions as my_funcs
+from condor_utils import utils
 from cosmology_calc import angulardistance
 
 from scipy.ndimage.filters import gaussian_filter1d
@@ -182,7 +183,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
     # Calculate j model for extrapolation
     J_model, M_model, j_model = my_funcs.calculate_j(r_deprojected, vel_fit[2], den_model_faceon, 0, kpc_per_pix)
-    #my_funcs.print_in_terminal(J_model=J_model, M_model=M_model, j_model=j_model)
+    #utils.print_in_terminal(J_model=J_model, M_model=M_model, j_model=j_model)
 
     vel_fit_only = copy(vel_fit[2])
     vel_fit_only[np.isnan(vel_data)] = 0
@@ -226,13 +227,14 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
     den_3rh[~mask_3rh] = 0
 
     J_3rh, M_3rh, j_3rh = my_funcs.calculate_j(r_deprojected, vel_fit_3rh, den_3rh, 0, kpc_per_pix)
-    #my_funcs.print_in_terminal(j_1rh=j_1rh, j_2rh=j_2rh, j_3rh=j_3rh)
+    #utils.print_in_terminal(j_1rh=j_1rh, j_2rh=j_2rh, j_3rh=j_3rh)
 
     j_1rh = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, r_1rh, kpc_per_pix)
     j_2rh = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, r_2rh, kpc_per_pix)
     j_3rh = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, r_3rh, kpc_per_pix)
     j_model = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, 5*r_3rh, kpc_per_pix)
     print(colored("j analitic =", "blue"), "%.2f" % j_model)
+    utils.print_in_terminal(j_analitic = j_model)
 
     # Calculate j model observed
     J_observed, M_observed, j_observed = my_funcs.calculate_j_weighted(r_deprojected, dep_vmap_fit, den_model_faceon, weight,
@@ -254,7 +256,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
     v_mod = my_funcs.v_circular_model(rad_long * kpc_per_pix, vflat_fit, rflat_fit * kpc_per_pix)
     v_2rh = v_mod[np.abs(rad_long - 2 * r_d_min).argmin()]
     j_approx = (1.19 * v_2rh * r_1rh * kpc_per_pix)
-    print(colored("j_approx =", "blue"), "%.2f" % j_approx)
+    utils.print_in_terminal(j_approx=j_approx)
 
     if j == 0:
         extended_radius = np.arange(0, len(binned_vmap[4]) + 3, 1)
@@ -469,8 +471,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
         fontprops = fm.FontProperties(size=15)
         ax0.imshow(den_data, cmap=cmr.sunburst, origin='lower', interpolation='nearest')
-        Da = angulardistance(z)
-        kpc_per_pix_HST = hst_pixscale / 3600 / 180 * np.pi * Da * 1000
+        kpc_per_pix_HST = hst_pixscale / 3600 / 180 * np.pi * angulardistance(z) * 1000
         scale = AnchoredSizeBar(ax0.transData, 5 * kpc_per_pix_HST, r"$5\,\, \mathrm{kpc}$", 'lower right',
                                 pad=0.1, color='white', frameon=False, size_vertical=0.4, fontproperties=fontprops)
         arcsec = AnchoredSizeBar(ax0.transData, 0.5 / hst_pixscale, r'$0.5"$', 'lower left',
@@ -481,7 +482,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
         ax0.add_artist(scale)
         ax0.add_artist(arcsec)
         ax0.text(0.03, 0.97, r"$\mathrm{%s}$" %galaxy, c="w", size=14,rotation=0., ha="left",va="top", transform=ax0.transAxes)
-        ax0.text(0.03, 0.88, r"$\textit{I-}\mathrm{band},\, z=1.52$", c="w", size=14, rotation=0., ha="left",
+        ax0.text(0.03, 0.88, r"$\textit{%s},\, z=%.2f$" %(gal.phot_data, gal.z_ao), c="w", size=14, rotation=0., ha="left",
                  va="top", transform=ax0.transAxes)
         ax0.set_title(r"$\mathit{HST\,\,}\mathrm{image}$", size=20)
 
@@ -634,164 +635,164 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
         plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}.pdf", overwrite=True, bbox_inches='tight')
         plt.close()
 
-        # Circular velocity combined with cumulatice j plot
-        fig, (ax1, ax2) = plt.subplots(ncols=1, nrows=2,sharex=True)
-        dep_vmap[dep_vmap == 0] = np.nan
-        dep_rad_unbinned = np.arange(0, len(binned_vmap[4])+8, 0.01)
-        v_model_unbinned = my_funcs.v_circular_model(dep_rad_unbinned * kpc_per_pix, vflat_fit, rflat_fit * kpc_per_pix)
+        # # Circular velocity combined with cumulatice j plot
+        # fig, (ax1, ax2) = plt.subplots(ncols=1, nrows=2,sharex=True)
+        # dep_vmap[dep_vmap == 0] = np.nan
+        # dep_rad_unbinned = np.arange(0, len(binned_vmap[4])+8, 0.01)
+        # v_model_unbinned = my_funcs.v_circular_model(dep_rad_unbinned * kpc_per_pix, vflat_fit, rflat_fit * kpc_per_pix)
+        #
+        # copy_data = copy(data[1])
+        # edge = copy(inten_data)
+        # edge[edge != 0] = 1
+        # copy_data[edge < 1] = np.nan
+        # dep_vmap[dep_vmap<10] = np.nan
+        #
+        # ax1.errorbar(data[1].ravel() / r_d_min, dep_vmap.ravel(), yerr=dep_vmap_er.ravel(), c='darkgreen',
+        #              fmt='o', ms=7, capsize=3, ecolor='dimgrey',markerfacecolor='white',
+        #              markeredgewidth=1.0, markeredgecolor="dimgrey", alpha=1,elinewidth=0.9)
+        # ax1.plot(dep_rad_unbinned / r_d_min, v_model_unbinned, '--', lw=4, label=r'$\mathrm{Model \,\, fit}$',
+        #                 alpha=1,zorder=10)
+        # ax1.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5, c='red', alpha=0.9, label=r"$r_{\mathrm{flat}}=%.1f \mathrm{\,kpc}$" % (rflat_fit * kpc_per_pix))
+        # data[1][np.isnan(dep_vmap)] = np.nan
+        # colors_instrument=["darkgreen","darkorange"]
+        # type_name = ["NS","AO"]
+        # if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
+        #     ax1.annotate(r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j], xy=(1, 0.23), xycoords='axes fraction',size=14, xytext=(0.7, 0.2),
+        #                  arrowprops={'arrowstyle': '->','ls': '--', 'lw': 2.5, 'color': colors_instrument[j]}, alpha=0.9)
+        #     ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
+        #                 label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
+        # else:
+        #     ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9, label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
+        # ax1.axhline(y=vflat_fit, ls='--', lw=2.5, c='grey', alpha=0.9)
+        # if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
+        #     ax1.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
+        # ax1.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
+        # ax1.set_ylabel(r'$v\mathrm{[km/s]}$', fontsize=20)
+        # ax1.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
+        # plt.xticks(fontsize=20, rotation=0)
+        # plt.yticks(fontsize=20, rotation=0)
+        # ax1.set_xlim(0, np.min([np.max(dep_rad_long / r_d_min), 8]))
+        # ax1.set_ylim(0, vflat_fit + 100)
+        # ax1.legend(loc='upper center', fontsize=16, bbox_to_anchor=(0.5, 1.3), columnspacing=0.85, handletextpad=0.53,
+        #            fancybox=True, shadow=True, ncol=3)
+        #
+        # # Cumulative j plot:
+        # f = interp1d(extended_radius / r_d_min, j_cum_model / np.max(j_cum_model), kind='cubic', fill_value="extrapolate")
+        # ax2.plot(dep_rad_unbinned, f(dep_rad_unbinned), "--", label=r"$\mathrm{Best \, model}$", lw=3.5, alpha=0.9)
+        # if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
+        #     ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
+        #                 label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
+        # else:
+        #     ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9, label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
+        # ax2.set_xlim(0, )
+        # ax2.set_xlabel(r"$\mathrm{deprojected} \quad r/r_d$", fontsize=20)
+        # ax2.set_ylabel(r"$j_*/j_\mathrm{*,tot}$", fontsize=20)
+        # ax2.axhline(y=1.0, ls='--', lw=2.5, c='grey', alpha=0.9)
+        # ax2.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5,color='red')
+        # ax2.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
+        # if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
+        #     ax2.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
+        #     ax2.text((5.15), 0.45, r"$r{=}3r_\mathrm{eff}$", c="k", size=16)
+        # if np.min([np.max(extended_radius / r_d_min), 8]) > 4.5:
+        #     ax2.text((3.5), 0.45, r"$r{=}2r_\mathrm{eff}$", c="k", size=16)
+        # ax2.set_xlim(0, np.min([np.max(extended_radius / r_d_min), 8]))
+        # ax2.set_ylim(0, 1.23)
+        # ax2.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
+        # plt.subplots_adjust(wspace=0.03, hspace=0.00)
+        # plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}_cumu_j_circ_vel.pdf", overwrite=True, bbox_inches='tight')
+        # plt.close()
 
-        copy_data = copy(data[1])
-        edge = copy(inten_data)
-        edge[edge != 0] = 1
-        copy_data[edge < 1] = np.nan
-        dep_vmap[dep_vmap<10] = np.nan
-
-        ax1.errorbar(data[1].ravel() / r_d_min, dep_vmap.ravel(), yerr=dep_vmap_er.ravel(), c='darkgreen',
-                     fmt='o', ms=7, capsize=3, ecolor='dimgrey',markerfacecolor='white',
-                     markeredgewidth=1.0, markeredgecolor="dimgrey", alpha=1,elinewidth=0.9)
-        ax1.plot(dep_rad_unbinned / r_d_min, v_model_unbinned, '--', lw=4, label=r'$\mathrm{Model \,\, fit}$',
-                        alpha=1,zorder=10)
-        ax1.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5, c='red', alpha=0.9, label=r"$r_{\mathrm{flat}}=%.1f \mathrm{\,kpc}$" % (rflat_fit * kpc_per_pix))
-        data[1][np.isnan(dep_vmap)] = np.nan
-        colors_instrument=["darkgreen","darkorange"]
-        type_name = ["NS","AO"]
-        if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
-            ax1.annotate(r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j], xy=(1, 0.23), xycoords='axes fraction',size=14, xytext=(0.7, 0.2),
-                         arrowprops={'arrowstyle': '->','ls': '--', 'lw': 2.5, 'color': colors_instrument[j]}, alpha=0.9)
-            ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
-                        label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
-        else:
-            ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9, label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
-        ax1.axhline(y=vflat_fit, ls='--', lw=2.5, c='grey', alpha=0.9)
-        if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
-            ax1.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
-        ax1.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
-        ax1.set_ylabel(r'$v\mathrm{[km/s]}$', fontsize=20)
-        ax1.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
-        plt.xticks(fontsize=20, rotation=0)
-        plt.yticks(fontsize=20, rotation=0)
-        ax1.set_xlim(0, np.min([np.max(dep_rad_long / r_d_min), 8]))
-        ax1.set_ylim(0, vflat_fit + 100)
-        ax1.legend(loc='upper center', fontsize=16, bbox_to_anchor=(0.5, 1.3), columnspacing=0.85, handletextpad=0.53,
-                   fancybox=True, shadow=True, ncol=3)
-
-        # Cumulative j plot:
-        f = interp1d(extended_radius / r_d_min, j_cum_model / np.max(j_cum_model), kind='cubic', fill_value="extrapolate")
-        ax2.plot(dep_rad_unbinned, f(dep_rad_unbinned), "--", label=r"$\mathrm{Best \, model}$", lw=3.5, alpha=0.9)
-        if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
-            ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
-                        label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
-        else:
-            ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9, label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
-        ax2.set_xlim(0, )
-        ax2.set_xlabel(r"$\mathrm{deprojected} \quad r/r_d$", fontsize=20)
-        ax2.set_ylabel(r"$j_*/j_\mathrm{*,tot}$", fontsize=20)
-        ax2.axhline(y=1.0, ls='--', lw=2.5, c='grey', alpha=0.9)
-        ax2.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5,color='red')
-        ax2.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
-        if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
-            ax2.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
-            ax2.text((5.15), 0.45, r"$r{=}3r_\mathrm{eff}$", c="k", size=16)
-        if np.min([np.max(extended_radius / r_d_min), 8]) > 4.5:
-            ax2.text((3.5), 0.45, r"$r{=}2r_\mathrm{eff}$", c="k", size=16)
-        ax2.set_xlim(0, np.min([np.max(extended_radius / r_d_min), 8]))
-        ax2.set_ylim(0, 1.23)
-        ax2.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
-        plt.subplots_adjust(wspace=0.03, hspace=0.00)
-        plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}_cumu_j_circ_vel.pdf", overwrite=True, bbox_inches='tight')
-        plt.close()
-
-        # Circular velocity combined with cumulative j plot and photometry fit
-        fig, (ax1, ax2, ax3) = plt.subplots(figsize=(5,6),ncols=1, nrows=3, sharex=True)
-        dep_vmap[dep_vmap == 0] = np.nan
-        dep_rad_unbinned = np.arange(0, len(binned_vmap[4]) + 8, 0.01)
-        v_model_unbinned = my_funcs.v_circular_model(dep_rad_unbinned * kpc_per_pix, vflat_fit, rflat_fit * kpc_per_pix)
-
-        copy_data = copy(data[1])
-        edge = copy(inten_data)
-        edge[edge != 0] = 1
-        copy_data[edge < 1] = np.nan
-        dep_vmap[dep_vmap < 10] = np.nan
-
-        ax1.errorbar(data[1].ravel() / r_d_min, dep_vmap.ravel(), yerr=dep_vmap_er.ravel(), c='darkgreen',
-                     fmt='o', ms=7, capsize=3, ecolor='dimgrey', markerfacecolor='white',
-                     markeredgewidth=1.0, markeredgecolor="dimgrey", alpha=1, elinewidth=0.9)
-        ax1.plot(dep_rad_unbinned / r_d_min, v_model_unbinned, '--', lw=4, label=r'$\mathrm{Model \,\, fit}$',
-                 alpha=1, zorder=10)
-        ax1.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5, c='red', alpha=0.9,
-                    label=r"$r_{\mathrm{flat}}=%.1f \mathrm{\,kpc}$" % (rflat_fit * kpc_per_pix))
-        data[1][np.isnan(dep_vmap)] = np.nan
-        colors_instrument = ["darkgreen", "darkorange"]
-        type_name = ["NS", "AO"]
-        if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
-            ax1.annotate(r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j], xy=(1, 0.23), xycoords='axes fraction',
-                         size=14, xytext=(0.7, 0.2),
-                         arrowprops={'arrowstyle': '->', 'ls': '--', 'lw': 2.5, 'color': colors_instrument[j]},
-                         alpha=0.9)
-            ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
-                        label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
-        else:
-            ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
-                        label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
-        ax1.axhline(y=vflat_fit, ls='--', lw=2.5, c='grey', alpha=0.9)
-        if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
-            ax1.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
-        ax1.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
-        ax1.set_ylabel(r'$v\mathrm{[km/s]}$', fontsize=20)
-        ax1.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
-        plt.xticks(fontsize=20, rotation=0)
-        plt.yticks(fontsize=20, rotation=0)
-        ax1.set_xlim(0, np.min([np.max(dep_rad_long / r_d_min), 8]))
-        ax1.set_ylim(0, vflat_fit + 100)
-        ax1.legend(loc='upper center', fontsize=16, bbox_to_anchor=(0.5, 1.3), columnspacing=0.85, handletextpad=0.53,
-                   fancybox=True, shadow=True, ncol=3)
-
-        # Cumulative j plot:
-        f = interp1d(extended_radius / r_d_min, j_cum_model / np.max(j_cum_model), kind='cubic',
-                     fill_value="extrapolate")
-        ax2.plot(dep_rad_unbinned, f(dep_rad_unbinned), "--", label=r"$\mathrm{Best \, model}$", lw=3.5, alpha=0.9)
-        if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
-            ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
-                        label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
-        else:
-            ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
-                        label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
-        ax2.set_xlim(0, )
-        ax2.set_xlabel(r"$\mathrm{deprojected} \quad r/r_d$", fontsize=20)
-        ax2.set_ylabel(r"$j_*/j_\mathrm{*,tot}$", fontsize=20)
-        ax2.axhline(y=1.0, ls='--', lw=2.5, c='grey', alpha=0.9)
-        ax2.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5, color='red')
-        ax2.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
-        if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
-            ax2.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
-            ax2.text((5.15), 0.45, r"$r{=}3r_\mathrm{eff}$", c="k", size=16)
-        if np.min([np.max(extended_radius / r_d_min), 8]) > 4.5:
-            ax2.text((3.5), 0.45, r"$r{=}2r_\mathrm{eff}$", c="k", size=16)
-        ax2.set_xlim(0, np.min([np.max(extended_radius / r_d_min), 8]))
-        ax2.set_ylim(0, 1.23)
-        ax2.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
-
-        r_d = r_d_min*resolution_ratio
-        den_dataz = den_data / np.nanmax(den_data)
-
-        radial_profile = my_funcs.radial_data(den_dataz, annulus_width=1, working_mask=None, x=None, y=None, rmax=None)
-        dep_rad = (radial_profile.r - 0.5) / r_d#_min
-
-        dataz = my_funcs.radial_profile(den_dataz, x0_phot, y0_phot, np.ones_like(den_data) / 10)
-        dep_rad = np.arange(0, len(dataz[4]), 1)
-        error = 0.005 * dep_rad + 0.05
-
-        model = my_funcs.surf_mass_den_profile(dep_rad, 1, r_d)
-        model = gaussian_filter(model, sigma = sigma_hst_data)
-        ax3.plot(dep_rad/r_d, model, color='red')
-        ax3.plot(dep_rad/r_d, dataz[4], "o", color="dodgerblue")
-        ax3.plot(dep_rad/r_d, dataz[4], color="dodgerblue")
-        ax3.set_xlabel(r"$\mathrm{deprojected} \quad r/r_d$", fontsize=20)
-        ax3.set_ylabel(r"$I(r)/I_\mathrm{max}$", fontsize=20)
-        plt.subplots_adjust(wspace=0.03, hspace=0.00)
-        plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}_cumu_j_circ_vel_WITH_HST.pdf", overwrite=True,
-                    bbox_inches='tight')
-        plt.close()
+        # # Circular velocity combined with cumulative j plot and photometry fit
+        # fig, (ax1, ax2, ax3) = plt.subplots(figsize=(5,6),ncols=1, nrows=3, sharex=True)
+        # dep_vmap[dep_vmap == 0] = np.nan
+        # dep_rad_unbinned = np.arange(0, len(binned_vmap[4]) + 8, 0.01)
+        # v_model_unbinned = my_funcs.v_circular_model(dep_rad_unbinned * kpc_per_pix, vflat_fit, rflat_fit * kpc_per_pix)
+        #
+        # copy_data = copy(data[1])
+        # edge = copy(inten_data)
+        # edge[edge != 0] = 1
+        # copy_data[edge < 1] = np.nan
+        # dep_vmap[dep_vmap < 10] = np.nan
+        #
+        # ax1.errorbar(data[1].ravel() / r_d_min, dep_vmap.ravel(), yerr=dep_vmap_er.ravel(), c='darkgreen',
+        #              fmt='o', ms=7, capsize=3, ecolor='dimgrey', markerfacecolor='white',
+        #              markeredgewidth=1.0, markeredgecolor="dimgrey", alpha=1, elinewidth=0.9)
+        # ax1.plot(dep_rad_unbinned / r_d_min, v_model_unbinned, '--', lw=4, label=r'$\mathrm{Model \,\, fit}$',
+        #          alpha=1, zorder=10)
+        # ax1.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5, c='red', alpha=0.9,
+        #             label=r"$r_{\mathrm{flat}}=%.1f \mathrm{\,kpc}$" % (rflat_fit * kpc_per_pix))
+        # data[1][np.isnan(dep_vmap)] = np.nan
+        # colors_instrument = ["darkgreen", "darkorange"]
+        # type_name = ["NS", "AO"]
+        # if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
+        #     ax1.annotate(r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j], xy=(1, 0.23), xycoords='axes fraction',
+        #                  size=14, xytext=(0.7, 0.2),
+        #                  arrowprops={'arrowstyle': '->', 'ls': '--', 'lw': 2.5, 'color': colors_instrument[j]},
+        #                  alpha=0.9)
+        #     ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
+        #                 label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
+        # else:
+        #     ax1.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
+        #                 label=r'$\mathrm{%s} \,\, r_\mathrm{max}$' % type_name[j])
+        # ax1.axhline(y=vflat_fit, ls='--', lw=2.5, c='grey', alpha=0.9)
+        # if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
+        #     ax1.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
+        # ax1.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
+        # ax1.set_ylabel(r'$v\mathrm{[km/s]}$', fontsize=20)
+        # ax1.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
+        # plt.xticks(fontsize=20, rotation=0)
+        # plt.yticks(fontsize=20, rotation=0)
+        # ax1.set_xlim(0, np.min([np.max(dep_rad_long / r_d_min), 8]))
+        # ax1.set_ylim(0, vflat_fit + 100)
+        # ax1.legend(loc='upper center', fontsize=16, bbox_to_anchor=(0.5, 1.3), columnspacing=0.85, handletextpad=0.53,
+        #            fancybox=True, shadow=True, ncol=3)
+        #
+        # # Cumulative j plot:
+        # f = interp1d(extended_radius / r_d_min, j_cum_model / np.max(j_cum_model), kind='cubic',
+        #              fill_value="extrapolate")
+        # ax2.plot(dep_rad_unbinned, f(dep_rad_unbinned), "--", label=r"$\mathrm{Best \, model}$", lw=3.5, alpha=0.9)
+        # if np.nanmax(copy_data.ravel() / r_d_min) > np.min([np.max(dep_rad_long / r_d_min), 8]):
+        #     ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
+        #                 label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
+        # else:
+        #     ax2.axvline(x=np.nanmax(copy_data.ravel() / r_d_min), ls='--', lw=2.5, c=colors_instrument[j], alpha=0.9,
+        #                 label=r'$\mathrm{%s} \,\, r_\mathrm{max}$')
+        # ax2.set_xlim(0, )
+        # ax2.set_xlabel(r"$\mathrm{deprojected} \quad r/r_d$", fontsize=20)
+        # ax2.set_ylabel(r"$j_*/j_\mathrm{*,tot}$", fontsize=20)
+        # ax2.axhline(y=1.0, ls='--', lw=2.5, c='grey', alpha=0.9)
+        # ax2.axvline(x=rflat_fit / r_d_min, ls='--', lw=2.5, color='red')
+        # ax2.axvline(x=3.4, ls='--', c='grey', alpha=0.9)
+        # if np.min([np.max(extended_radius / r_d_min), 8]) > 6.3:
+        #     ax2.axvline(x=5.04, ls='--', c='grey', alpha=0.9)
+        #     ax2.text((5.15), 0.45, r"$r{=}3r_\mathrm{eff}$", c="k", size=16)
+        # if np.min([np.max(extended_radius / r_d_min), 8]) > 4.5:
+        #     ax2.text((3.5), 0.45, r"$r{=}2r_\mathrm{eff}$", c="k", size=16)
+        # ax2.set_xlim(0, np.min([np.max(extended_radius / r_d_min), 8]))
+        # ax2.set_ylim(0, 1.23)
+        # ax2.tick_params(axis='both', which='major', direction='in', labelsize=18, pad=3)
+        #
+        # r_d = r_d_min*resolution_ratio
+        # den_dataz = den_data / np.nanmax(den_data)
+        #
+        # radial_profile = my_funcs.radial_data(den_dataz, annulus_width=1, working_mask=None, x=None, y=None, rmax=None)
+        # dep_rad = (radial_profile.r - 0.5) / r_d#_min
+        #
+        # dataz = my_funcs.radial_profile(den_dataz, x0_phot, y0_phot, np.ones_like(den_data) / 10)
+        # dep_rad = np.arange(0, len(dataz[4]), 1)
+        # error = 0.005 * dep_rad + 0.05
+        #
+        # model = my_funcs.surf_mass_den_profile(dep_rad, 1, r_d)
+        # model = gaussian_filter(model, sigma = sigma_hst_data)
+        # ax3.plot(dep_rad/r_d, model, color='red')
+        # ax3.plot(dep_rad/r_d, dataz[4], "o", color="dodgerblue")
+        # ax3.plot(dep_rad/r_d, dataz[4], color="dodgerblue")
+        # ax3.set_xlabel(r"$\mathrm{deprojected} \quad r/r_d$", fontsize=20)
+        # ax3.set_ylabel(r"$I(r)/I_\mathrm{max}$", fontsize=20)
+        # plt.subplots_adjust(wspace=0.03, hspace=0.00)
+        # plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}_cumu_j_circ_vel_WITH_HST.pdf", overwrite=True,
+        #             bbox_inches='tight')
+        # plt.close()
 
 
         # fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(figsize=(15, 3), ncols=5, nrows=1)

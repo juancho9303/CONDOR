@@ -1,15 +1,14 @@
 import numpy as np
-from modules import fitting_functions as funcs
+from condor_utils import fitting_functions as funcs
 
 class Galaxy():
 
     def __init__(self, name, z_ns, halpha_ns, velmax_ns, reff_kpc, psf_fwhm_NS_paper, maxbin_ns, x0_ns, y0_ns,
-                 pafit_ns, pixscale_ns, SFR, M_s, type_ns, sigma_kernel_pix_ns, phot_file_name, H_band,
-                 J_band, psf_fwhm_h, psf_fwhm_j, pixscale_hst, sigma_x_ns, sigma_y_ns, q_ns, theta_ns,
-                 psf_fwhm_mine_ns, z_ao, halpha_ao, pa_ao, velmax_ao, reff_kpc_ao, psf_fwhm_paper_ao,
-                 maxbin_ao, x0_ao, y0_ao, pafit_ao, pixscale_ao, extent_to_show_ao, type_ao, alpha,
-                 beta, q_ao, theta_ao, airy, peak, strehl, FWHM_airy, FWHM_moffat, psf_fwhm_ao, pa, inc, rflat,
-                 vflat, b_a, r_d):
+                 pafit_ns, pixscale_ns, SFR, M_s, type_ns, phot_file_name, phot_data, H_band, J_band, psf_fwhm_h, psf_fwhm_j,
+                 pixscale_hst, sigma_x_ns, sigma_y_ns, q_ns, theta_ns, psf_fwhm_mine_ns, z_ao, halpha_ao, pa_ao,
+                 velmax_ao, reff_kpc_ao, psf_fwhm_paper_ao, maxbin_ao, x0_ao, y0_ao, pafit_ao, pixscale_ao,
+                 extent_to_show_ao, type_ao, alpha, beta, q_ao, theta_ao, airy, peak, strehl, FWHM_airy, FWHM_moffat,
+                 psf_fwhm_ao, pa, inc, rflat, vflat, b_a, r_d):
         self.name = name
         self.z_ns = z_ns
         self.halpha_ns = halpha_ns
@@ -24,8 +23,8 @@ class Galaxy():
         self.SFR = SFR
         self.M_s = M_s
         self.type_ns = type_ns
-        self.sigma_kernel_pix_ns = sigma_kernel_pix_ns
         self.phot_file_name = phot_file_name
+        self.phot_data = phot_data
         self.H_band = H_band
         self.J_band = J_band
         self.psf_fwhm_h = psf_fwhm_h

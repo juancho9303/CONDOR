@@ -36,7 +36,7 @@ from copy import copy
 
 from cosmology_calc import angulardistance
 import plot_and_save_results as make_plots
-from modules import fitting_functions as my_funcs
+from condor_utils import fitting_functions as my_funcs
 from get_j import get_j
 from galaxy import Galaxy
 
@@ -65,8 +65,8 @@ def load_parameters(i):
                  par.SFR[i],
                  par.M_s[i],
                  par.type_ns[i],
-                 par.sigma_kernel_pix_ns[i],
                  par.phot_file_name[i],
+                 par.phot_data[i],
                  par.H_band[i],
                  par.J_band[i],
                  par.psf_fwhm_h[i],
@@ -110,7 +110,7 @@ def load_parameters(i):
 
 # Load all the maps and convolution kernels
 def load_maps(i):
-    maps = np.empty([3, 39, 4], dtype=object)  # Create empty object for all  maps to be stored
+    maps = np.empty([3, 40, 4], dtype=object)  # Create empty object for all  maps to be stored
     for k in range(len(types)):
         maps[0][i][k] = fits.open(f"{path}/../My_AM_code/Data_disks/{load_parameters(i).name}_NS_{types[k]}.fits")[0].data
         maps[1][i][k] = fits.open(f"{path}/../My_AM_code/Data_disks/{load_parameters(i).name}_AO_{types[k]}.fits")[0].data
@@ -123,16 +123,35 @@ def load_maps(i):
     if load_parameters(i).pa_ao != 0:
         AO_kernel = ndimage.rotate(AO_kernel, -load_parameters(i).pa_ao, reshape=False)
 
-    if load_parameters(i).H_band != 'no_data':
+    if load_parameters(i).phot_data == 'H-band':
         den_data = fits.open(
             f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
             load_parameters(i).phot_file_name + '_' + load_parameters(i).H_band + '_drz.fits')[0].data
-    elif load_parameters(i).H_band == 'no_data' and load_parameters(i).J_band != 'no_data':
+    elif load_parameters(i).phot_data == 'I-band':
         den_data = fits.open(
             f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
-            load_parameters(i).phot_file_name + '_' + load_parameters(i).J_band + '_drz.fits')[0].data
-    else:
+            load_parameters(i).phot_file_name + '_I_band.fits')[0].data
+    elif load_parameters(i).phot_data == 'K-band':
+        den_data = fits.open(
+            f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
+            load_parameters(i).phot_file_name + '_K_band.fits')[0].data
+    elif load_parameters(i).phot_data == 'no-HST':
         den_data = copy(maps[1][i][0])
+
+    # if load_parameters(i).H_band != 'no_data':
+    #     den_data = fits.open(
+    #         f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
+    #         load_parameters(i).phot_file_name + '_' + load_parameters(i).H_band + '_drz.fits')[0].data
+    # elif load_parameters(i).H_band == 'no_data' and load_parameters(i).J_band != 'no_data':
+    #     den_data = fits.open(
+    #         f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
+    #         load_parameters(i).phot_file_name + '_' + load_parameters(i).J_band + '_drz.fits')[0].data
+    # elif load_parameters(i).H_band == 'no_data' and load_parameters(i).J_band == 'no_data' and load_parameters(i).other_band != 'no_data':
+    #     den_data = fits.open(
+    #         f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
+    #         load_parameters(i).phot_file_name + '_other_band.fits')[0].data
+    # else:
+    #     den_data = copy(maps[1][i][0])
 
     return maps[0][i][1], maps[0][i][0], maps[0][i][2], maps[1][i][1], maps[1][i][0], maps[1][i][2], AO_kernel, NS_kernel, den_data
 
@@ -154,9 +173,8 @@ def load_previous_runs(i, type_of_data):
     y0_ns = results.y0_ns[i * 3 + dat]
     x0_ao = results.x0_ao[i * 3 + dat]
     y0_ao = results.y0_ao[i * 3 + dat]
-    #r_d_pix = results.r_d[i * 3 + dat]
 
-    return pa, inc, rflat, vflat, x0_ns, y0_ns, x0_ao, y0_ao#, r_d_pix
+    return pa, inc, rflat, vflat, x0_ns, y0_ns, x0_ao, y0_ao
 
 
 if __name__ == "__main__":

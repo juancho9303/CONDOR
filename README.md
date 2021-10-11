@@ -40,17 +40,7 @@ Examples
 --------
 Do this and that with ``data_``::
 
-    from pypegase import *
     import matplotlib.pyplot as plt
-
-    PEGASE.pegase_dir = '/home/me/PEGASE.2/' # unless PEGASE_HOME is set
-
-    peg = PEGASE('mydata') # default IMF, Scenario, etc
-    peg.generate() # some minutes may be required, console will show progress
-    colors = peg.colors()
-    colors['B-V'][-1] # B-V color at last timestep (20 Gyr) = .922
-    plt.plot(colors['time'], colors['B-V']) # plot times versus B-V color
-    plt.legend(loc = 'lower right', numpoints=1)
 
     peg.save_to_file(peg.name + '.peg')
 

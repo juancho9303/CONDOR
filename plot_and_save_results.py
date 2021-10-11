@@ -17,7 +17,6 @@ import corner
 import cmasher as cmr
 
 from condor_utils import fitting_functions as my_funcs
-from condor_utils import utils
 from cosmology_calc import angulardistance
 
 from scipy.ndimage.filters import gaussian_filter1d
@@ -27,6 +26,8 @@ from scipy import ndimage, misc
 
 warnings.filterwarnings("ignore")
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
+import matplotlib.font_manager as fm
+fontprops = fm.FontProperties(size=14)
 
 home = str(Path.home())
 path = home + "/Dropbox/PhD/paper_2/"
@@ -36,9 +37,6 @@ types = ["inten", "vel", "velerr"]  # H alpha intensity, vel map, HST continuum 
 rmax_NS = 4.5# approximation of the extent of the data based on the 2D maps
 rmax_AO = 3.1# approximation of the extent of the data based on the 2D maps
 sigma_hst_data = 1.5
-
-import matplotlib.font_manager as fm
-fontprops = fm.FontProperties(size=14)
 
 
 def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_per_pix, sigma_ns, sigma_ao,
@@ -183,7 +181,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
     # Calculate j model for extrapolation
     J_model, M_model, j_model = my_funcs.calculate_j(r_deprojected, vel_fit[2], den_model_faceon, 0, kpc_per_pix)
-    #utils.print_in_terminal(J_model=J_model, M_model=M_model, j_model=j_model)
+    #my_funcs.print_in_terminal(J_model=J_model, M_model=M_model, j_model=j_model)
 
     vel_fit_only = copy(vel_fit[2])
     vel_fit_only[np.isnan(vel_data)] = 0
@@ -227,14 +225,14 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
     den_3rh[~mask_3rh] = 0
 
     J_3rh, M_3rh, j_3rh = my_funcs.calculate_j(r_deprojected, vel_fit_3rh, den_3rh, 0, kpc_per_pix)
-    #utils.print_in_terminal(j_1rh=j_1rh, j_2rh=j_2rh, j_3rh=j_3rh)
+    #my_funcs.print_in_terminal(j_1rh=j_1rh, j_2rh=j_2rh, j_3rh=j_3rh)
 
     j_1rh = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, r_1rh, kpc_per_pix)
     j_2rh = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, r_2rh, kpc_per_pix)
     j_3rh = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, r_3rh, kpc_per_pix)
     j_model = my_funcs.calc_j_analitically(r_d_min, rflat_fit, vflat_fit, 5*r_3rh, kpc_per_pix)
     print(colored("j analitic =", "blue"), "%.2f" % j_model)
-    utils.print_in_terminal(j_analitic = j_model)
+    my_funcs.print_in_terminal(j_analitic = j_model)
 
     # Calculate j model observed
     J_observed, M_observed, j_observed = my_funcs.calculate_j_weighted(r_deprojected, dep_vmap_fit, den_model_faceon, weight,
@@ -256,7 +254,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
     v_mod = my_funcs.v_circular_model(rad_long * kpc_per_pix, vflat_fit, rflat_fit * kpc_per_pix)
     v_2rh = v_mod[np.abs(rad_long - 2 * r_d_min).argmin()]
     j_approx = (1.19 * v_2rh * r_1rh * kpc_per_pix)
-    utils.print_in_terminal(j_approx=j_approx)
+    my_funcs.print_in_terminal(j_approx=j_approx)
 
     if j == 0:
         extended_radius = np.arange(0, len(binned_vmap[4]) + 3, 1)

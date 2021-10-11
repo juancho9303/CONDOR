@@ -1,20 +1,14 @@
 from __future__ import print_function
-import gc, sys, os
 import numpy as np
 import warnings
-import zeus
 import emcee
 import time
-from pathlib import Path
-from scipy import ndimage, misc
-from astropy.io import fits, ascii
 
 from multiprocessing import Pool
 from copy import copy
 from cosmology_calc import angulardistance
 import plot_and_save_results as make_plots
 from condor_utils import fitting_functions as my_funcs
-from galaxy import Galaxy
 
 warnings.filterwarnings("ignore")
 
@@ -27,7 +21,6 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
     resolution_ratio = gal.pixscale_ns / gal.pixscale_ao
 
     l0 = 6562.77 * (1 + gal.z_ao)
-    #wav = np.arange(l0 - 101, l0 + 101, 2)
     wav = np.arange(l0 - 30, l0 + 30, 2) #~36 km/s per 2A (z~1.5)
 
     vel_data_ns   = maps[0]

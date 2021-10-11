@@ -37,8 +37,8 @@ from copy import copy
 from cosmology_calc import angulardistance
 import plot_and_save_results as make_plots
 from condor_utils import fitting_functions as my_funcs
-from get_j import get_j
-from galaxy import Galaxy
+from condor_utils.get_j import get_j
+from condor_utils.galaxy import Galaxy
 
 warnings.filterwarnings("ignore")
 home = str(Path.home())
@@ -137,21 +137,6 @@ def load_maps(i):
             load_parameters(i).phot_file_name + '_K_band.fits')[0].data
     elif load_parameters(i).phot_data == 'no-HST':
         den_data = copy(maps[1][i][0])
-
-    # if load_parameters(i).H_band != 'no_data':
-    #     den_data = fits.open(
-    #         f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
-    #         load_parameters(i).phot_file_name + '_' + load_parameters(i).H_band + '_drz.fits')[0].data
-    # elif load_parameters(i).H_band == 'no_data' and load_parameters(i).J_band != 'no_data':
-    #     den_data = fits.open(
-    #         f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
-    #         load_parameters(i).phot_file_name + '_' + load_parameters(i).J_band + '_drz.fits')[0].data
-    # elif load_parameters(i).H_band == 'no_data' and load_parameters(i).J_band == 'no_data' and load_parameters(i).other_band != 'no_data':
-    #     den_data = fits.open(
-    #         f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
-    #         load_parameters(i).phot_file_name + '_other_band.fits')[0].data
-    # else:
-    #     den_data = copy(maps[1][i][0])
 
     return maps[0][i][1], maps[0][i][0], maps[0][i][2], maps[1][i][1], maps[1][i][0], maps[1][i][2], AO_kernel, NS_kernel, den_data
 

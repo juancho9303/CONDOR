@@ -17,11 +17,13 @@ For more details on what CONDOR does, see: https://academic.oup.com/mnras/articl
 Usage
 -----
 
-Us.
+Some basic settings need to be done in order to run the pipeline.
 
 The basic workflow is as follows:
 
-- Creme.
+- Set up a ".txt" or ".dat" file specifying the input parameterts for the geometrical deprojection of the disk (inclination, position angle, size), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk:
+- 
+![image](https://user-images.githubusercontent.com/14315715/149685139-52f89727-376d-4250-ab9e-066694c00248.png)
 
 Allry.
 

@@ -306,7 +306,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
             ax3.axhline(y=rflat_fit, ls='--', c="darkorange")
             ax3.set_ylabel(r'$r_\mathrm{flat}$', fontsize=14)
-            ax3.set_title('rflat=%.1f kpc' % (rflat_fit * kpc_per_pix))
+            ax3.set_title(r'$r_\mathrm{flat}$=%.1f pix = %.1f kpc' % (rflat_fit, (rflat_fit * kpc_per_pix)))
 
             ax4.axhline(y=vflat_fit, ls='--', c="darkorange")
             ax4.set_ylabel(r'$v_\mathrm{flat}(\mathrm{km/s})$', fontsize=14)
@@ -331,13 +331,9 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
             ax = cornerfig.add_axes([0.6, .65, .2, .2])
             ax.imshow(vel_data, cmap=mpl.cm.RdYlBu_r, origin='lower')
-            ax.set_facecolor('black')
-            ax.set_xticks([])
-            ax.set_yticks([])
+            my_funcs.remove_ticks([ax])
             ax.set_title(r"$\mathrm{Data\quad steps=%d}$" % (steps))
-            ax.plot(rad * np.cos(ang_fit) + x0_fit, rad * np.sin(ang_fit) + y0_fit, ls='--', c="red", lw=3)  # Zero-vel
-            ax.plot(-rad * np.sin(ang_fit) + x0_fit, rad * np.cos(ang_fit) + y0_fit, ls='--', c="lime",
-                     lw=3)  # Major ax
+            my_funcs.draw_kin_and_zero_vel_axes(ax, rad, ang_fit, x0_fit, y0_fit)
             cornerfig.show()
             plt.savefig(f"{path}/results/{galaxy}/{galaxy}_{instrument[j]}_corner.pdf", overwrite=True,
                         bbox_inches='tight')
@@ -388,11 +384,8 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
             #             my_funcs.draw_elliptical_psf(sigma_ao, sigma_ao * q_ao, theta=Angle(theta_ao - 45, 'deg')))
             #
             #     ax4.set_title(r"$\mathrm{H\alpha\,\, intensity}$", size=20)
-            #
-            #     for ax in [ax1, ax2, ax3, ax0, ax4]:
-            #         ax.set_xticks([])
-            #         ax.set_yticks([])
-            #         ax.set_facecolor('black')
+
+            #     my_funcs.remove_ticks([ax1, ax2, ax3, ax0, ax4])
             #
             #     # 3" halo to check the scale
             #     center_halo = PixCoord(x0_fit, y0_fit)
@@ -495,10 +488,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
         ax4.set_title(r"$\mathrm{H\alpha\,\, intensity}$", size=20)
 
-        for ax in [ax1, ax2, ax3, ax0, ax4]:
-            ax.set_xticks([])
-            ax.set_yticks([])
-            ax.set_facecolor('black')
+        my_funcs.remove_ticks([ax1,ax2,ax3,ax0,ax4])
 
         # 3" halo to check the scale
         center_halo = PixCoord(x0_fit, y0_fit)
@@ -515,8 +505,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
         ax1.set_xlim(-0.5, vel_data.shape[1] - 0.5)
         ax1.set_ylim(-0.5, vel_data.shape[0] - 0.5)
 
-        ax1.plot(rad * np.cos(ang_fit) + x0_fit, rad * np.sin(ang_fit) + y0_fit, ls='--', c="red", lw=3)  # Zero-vel
-        ax1.plot(-rad * np.sin(ang_fit) + x0_fit, rad * np.cos(ang_fit) + y0_fit, ls='--', c="lime", lw=3)  # Major ax
+        my_funcs.draw_kin_and_zero_vel_axes(ax1, rad, ang_fit, x0_fit, y0_fit)
         if j == 0:
             ax1.add_patch(my_funcs.draw_elliptical_psf(sigma_x_ns, sigma_y_ns, theta=Angle(theta_ns - 45, 'deg')))
         elif j == 1:
@@ -535,9 +524,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
         ax2.imshow(vel_model, cmap=mpl.cm.RdYlBu_r, vmin=vel_fit_for_plot * (-1),
                    vmax=vel_fit_for_plot, origin='lower', interpolation='nearest')
-        ax2.plot(rad * np.cos(ang_fit) + x0_fit, rad * np.sin(ang_fit) + y0_fit, ls='--', c="red", lw=3)  # Zero-vel
-        ax2.plot(-rad * np.sin(ang_fit) + x0_fit, rad * np.cos(ang_fit) + y0_fit, ls='--', c="lime",
-                 lw=3)  # Major ax PA
+        my_funcs.draw_kin_and_zero_vel_axes(ax2, rad, ang_fit, x0_fit, y0_fit)
         cs = ax2.contour(x, y, vel_fit[0], cmap=mpl.cm.RdYlBu_r, interpolation='none')
         ax2.contour(cs, colors='k')
         ax2.set_xlim(-0.5, vel_data.shape[1] - 0.5)
@@ -567,10 +554,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
         # Plots for paper
         fig, (ax1, ax2, ax3) = plt.subplots(figsize=(12, 4), ncols=3, nrows=1)
 
-        for ax in [ax1, ax2, ax3]:
-            ax.set_xticks([])
-            ax.set_yticks([])
-            ax.set_facecolor('black')
+        my_funcs.remove_ticks([ax1, ax2, ax3])
 
         # 3" halo to check the scale
         center_halo = PixCoord(x0_fit, y0_fit)
@@ -591,8 +575,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
         ax1.set_xlim(-0.5, vel_data.shape[1] - 0.5)
         ax1.set_ylim(-0.5, vel_data.shape[0] - 0.5)
 
-        ax1.plot(rad * np.cos(ang_fit) + x0_fit, rad * np.sin(ang_fit) + y0_fit, ls='--', c="red",lw=3)  # Zero-vel
-        ax1.plot(-rad * np.sin(ang_fit) + x0_fit, rad * np.cos(ang_fit) + y0_fit, ls='--', c="lime",lw=3) # Major ax
+        my_funcs.draw_kin_and_zero_vel_axes(ax1, rad, ang_fit, x0_fit, y0_fit)
         ax1.set_title(r"$\mathrm{Data}$", size=28)
 
         input_params = [pa_fit, inc_fit, rflat_fit, vflat_fit, x0_fit, y0_fit, x0_fit, y0_fit]
@@ -607,8 +590,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
         ax2.imshow(vel_model, cmap=mpl.cm.RdYlBu_r, vmin=vel_fit_for_plot * (-1),
                    vmax=vel_fit_for_plot, origin='lower', interpolation='nearest')
-        ax2.plot(rad * np.cos(ang_fit) + x0_fit, rad * np.sin(ang_fit) + y0_fit, ls='--', c="red", lw=3)  # Zero-vel
-        ax2.plot(-rad * np.sin(ang_fit) + x0_fit, rad * np.cos(ang_fit) + y0_fit, ls='--', c="lime",lw=3)  # Major ax PA
+        my_funcs.draw_kin_and_zero_vel_axes(ax2, rad, ang_fit, x0_fit, y0_fit)
         cs = ax2.contour(x, y, vel_fit[0], cmap=mpl.cm.RdYlBu_r, interpolation='none')
         ax2.contour(cs, colors='k')
         ax2.set_xlim(-0.5, vel_data.shape[1] - 0.5)
@@ -804,10 +786,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
         #
         # patch = reg.as_artist(facecolor='w', edgecolor='k', color='w', fill=True, lw=1)
         #
-        # for ax in [ax1, ax2, ax3]:
-        #     ax.set_xticks([])
-        #     ax.set_yticks([])
-        #     ax.set_facecolor('black')
+        # my_funcs.remove_ticks([ax1, ax2, ax3])
         #
         # # 3" halo to check the scale
         # center_halo = PixCoord(x0_fit, y0_fit)
@@ -965,56 +944,56 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
     # Make all plots:
     make_plots()
 
-    # results = ascii.read(f'{path}/results/results_table.csv')
-    # results.add_row([galaxy,
-    #                  instrument[j],
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(j_observed),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_2rh),
-    #                  '{:.1f}'.format(j_3rh),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_approx),
-    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.1f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit)))))),
-    #                  '{:.1f}'.format(j_1rh),
-    #                  '{:.1f}'.format(x0_fit),
-    #                  '{:.1f}'.format(y0_fit),
-    #                  '{:.1f}'.format(x0_fit),
-    #                  '{:.1f}'.format(y0_fit),
-    #                  '{:.1f}'.format(x0_phot),
-    #                  '{:.1f}'.format(y0_phot)
-    #                  ])
-    # ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
-    #
-    # results = ascii.read(f'{path}/results/results_table_short.csv')
-    # results.add_row([galaxy,
-    #                  instrument[j],
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(j_3rh),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_approx),
-    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit))))))
-    #                  ])
-    # ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
-    #
-    # print(colored("Finished", "green"), colored(galaxy, "green"), colored(instrument[j], "green"))
-    #
-    # gc.collect()
+    results = ascii.read(f'{path}/results/results_table.csv')
+    results.add_row([galaxy,
+                     instrument[j],
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(j_observed),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_2rh),
+                     '{:.1f}'.format(j_3rh),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_approx),
+                     '{:.2f}'.format(r_d_min * kpc_per_pix),
+                     '{:.1f}'.format(r_d_min * kpc_per_pix),
+                     '{:d}'.format(int(pa_fit)),
+                     '{:.1f}'.format(j_1rh),
+                     '{:.1f}'.format(x0_fit),
+                     '{:.1f}'.format(y0_fit),
+                     '{:.1f}'.format(x0_fit),
+                     '{:.1f}'.format(y0_fit),
+                     '{:.1f}'.format(x0_phot),
+                     '{:.1f}'.format(y0_phot)
+                     ])
+    ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
+
+    results = ascii.read(f'{path}/results/results_table_short.csv')
+    results.add_row([galaxy,
+                     instrument[j],
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.2f}'.format(r_d_min * kpc_per_pix),
+                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(j_3rh),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_approx),
+                     '{:d}'.format(int(pa_fit))
+                     ])
+    ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
+
+    print(colored("Finished", "green"), colored(galaxy, "green"), colored(instrument[j], "green"))
+
+    gc.collect()
 
 
 
@@ -1056,8 +1035,8 @@ def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_
     vmap_er_ao[vmap_er_ao == 0] = np.nan
 
     # Use the optimized parameters to calculate model J
-    vel_fit_ns = my_funcs.my_vel_model_for_plot(x_ns, y_ns, pa_fit, inc_fit, rflat_fit / resolution_ratio, vflat_fit, x0=x0_fit_ns,
-                              y0=y0_fit_ns, NS_kernel=None, AO_kernel=None, i=i, data=0)
+    vel_fit_ns = my_funcs.my_vel_model_for_plot(x_ns, y_ns, pa_fit, inc_fit, rflat_fit / resolution_ratio, vflat_fit,
+                                                x0=x0_fit_ns, y0=y0_fit_ns, NS_kernel=None, AO_kernel=None, i=i, data=0)
 
     vel_fit_ao = my_funcs.my_vel_model_for_plot(x_ao, y_ao, pa_fit, inc_fit, rflat_fit, vflat_fit, x0=x0_fit_ao, y0=y0_fit_ao,
                               NS_kernel=None, AO_kernel=None, i=i, data=0)
@@ -1290,36 +1269,33 @@ def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_
 
             ax1.axhline(y=pa_fit, ls='--', c="darkorange")
             ax1.set_ylabel(r"$\theta(^\circ)$", fontsize=14)
-            ax1.set_xticks([])
 
             ax2.axhline(y=inc_fit, ls='--', c="darkorange")
             ax2.set_ylabel(r'$i(^\circ)$', fontsize=14)
-            ax2.set_xticks([])
 
             ax3.axhline(y=rflat_fit, ls='--', c="darkorange")
             ax3.set_ylabel(r'$r_\mathrm{flat}(\mathrm{kpc})$', fontsize=14)
-            ax3.set_xticks([])
-            ax3.set_title('rflat=%.1f kpc' % (rflat_fit * kpc_per_pix))
+            ax3.set_title(r'$r_\mathrm{flat}$ = %.1f kpc' % (rflat_fit * kpc_per_pix))
 
             ax4.axhline(y=vflat_fit, ls='--', c="darkorange")
             ax4.set_ylabel(r'$v_\mathrm{flat}(\mathrm{km/s})$', fontsize=14)
-            ax4.set_xlabel(r"$\mathrm{Steps}$")
 
             ax5.axhline(y=x0_fit_ns, ls='--', c="darkorange")
             ax5.set_ylabel(r'$x_{0}(\mathrm{NS})(\mathrm{pixel})$', fontsize=14)
-            ax5.set_xlabel(r"$\mathrm{Steps}$")
 
             ax6.axhline(y=y0_fit_ns, ls='--', c="darkorange")
             ax6.set_ylabel(r'$y_{0}(\mathrm{NS})(\mathrm{pixel})$', fontsize=14)
-            ax6.set_xlabel(r"$\mathrm{Steps}$")
 
             ax7.axhline(y=x0_fit_ao, ls='--', c="darkorange")
             ax7.set_ylabel(r'$x_{0}(\mathrm{AO})(\mathrm{pixel})$', fontsize=14)
-            ax7.set_xlabel(r"$\mathrm{Steps}$")
 
             ax8.axhline(y=y0_fit_ao, ls='--', c="darkorange")
             ax8.set_ylabel(r'$y_{0}(\mathrm{AO})(\mathrm{pixel})$', fontsize=14)
-            ax8.set_xlabel(r"$\mathrm{Steps}$")
+
+            for ax in [ax1,ax2,ax3,ax4]:
+                ax.set_xticks([])
+            for ax in [ax5,ax6,ax7,ax8]:
+                ax.set_xlabel(r"$\mathrm{Steps}$")
 
             plt.subplots_adjust(wspace=0.43, hspace=0.0)
             plt.savefig(f"{path}/results/{galaxy}/{galaxy}_combined_walkers.png", overwrite=True,
@@ -1333,20 +1309,14 @@ def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_
                                       quantiles=[0.16, 0.5, 0.84], show_titles=True)
             ax = cornerfig.add_axes([0.55, .65, .2, .2])
             ax.imshow(vel_data_ns, cmap=mpl.cm.RdYlBu_r, origin='lower')
-            ax.set_facecolor('black')
-            ax.set_xticks([])
-            ax.set_yticks([])
+            my_funcs.remove_ticks([ax])
             ax.set_title(r"$\mathrm{Data\quad steps=%d}$" % (steps))
-            ax.plot(rad * np.cos(ang_fit) + x0_fit_ns, rad * np.sin(ang_fit) + y0_fit_ns, ls='--', c="red", lw=3)
-            ax.plot(-rad * np.sin(ang_fit) + x0_fit_ns, rad * np.cos(ang_fit) + y0_fit_ns, ls='--', c="lime",lw=3)
+            my_funcs.draw_kin_and_zero_vel_axes(ax, rad, ang_fit, x0_fit_ns, y0_fit_ns)
             ax = cornerfig.add_axes([0.78, .65, .2, .2])
             ax.imshow(vel_data_ao, cmap=mpl.cm.RdYlBu_r, origin='lower')
-            ax.set_facecolor('black')
-            ax.set_xticks([])
-            ax.set_yticks([])
+            my_funcs.remove_ticks([ax])
             ax.set_title(r"$\mathrm{Data\quad steps=%d}$" % (steps))
-            ax.plot(rad * np.cos(ang_fit) + x0_fit_ao, rad * np.sin(ang_fit) + y0_fit_ao, ls='--', c="red", lw=3)
-            ax.plot(-rad * np.sin(ang_fit) + x0_fit_ao, rad * np.cos(ang_fit) + y0_fit_ao, ls='--', c="lime",lw=3)
+            my_funcs.draw_kin_and_zero_vel_axes(ax, rad, ang_fit, x0_fit_ao, y0_fit_ao)
             cornerfig.show()
             plt.savefig(f"{path}/results/{galaxy}/{galaxy}_combined_corner.pdf", overwrite=True,
                         bbox_inches='tight')
@@ -1355,15 +1325,11 @@ def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_
 
         fig, ((ax1,ax2,ax3)) = plt.subplots(figsize=(12, 4),ncols=3, nrows=1)
 
-        for ax in [ax1, ax2, ax3]:
-            ax.set_xticks([])
-            ax.set_yticks([])
-            ax.set_facecolor('black')
+        my_funcs.remove_ticks([ax1, ax2, ax3])
 
         plot = ax1.imshow(vel_fit_ao[0], cmap=mpl.cm.RdYlBu_r,vmin=vel_fit_lim_for_plot * (-1),
                           vmax=vel_fit_lim_for_plot, origin='lower', interpolation='nearest') #vel_fit_ao[0]
-        ax1.plot(rad * np.cos(ang_fit) + x0_fit_ao, rad * np.sin(ang_fit) + y0_fit_ao, ls='--', c="red",lw=3)
-        ax1.plot(-rad * np.sin(ang_fit) + x0_fit_ao, rad * np.cos(ang_fit) + y0_fit_ao, ls='--', c="lime",lw=3)
+        my_funcs.draw_kin_and_zero_vel_axes(ax1, rad, ang_fit, x0_fit_ao, y0_fit_ao)
         cs = ax1.contour(x_ao, y_ao, vel_fit_ao[0], cmap=mpl.cm.RdYlBu_r, interpolation='none')
         ax1.set_title(r'$\mathrm{Best \,\, model}$', size=28)
         ax1.contour(cs, colors='k')
@@ -1502,10 +1468,7 @@ def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_
 
         plot=ax1.imshow(vel_fit_ao[0], cmap=mpl.cm.RdYlBu_r, vmin=vel_fit_lim_for_plot * (-1),
                             vmax=vel_fit_lim_for_plot, origin='lower', interpolation='nearest')
-        ax1.plot(rad * np.cos(ang_fit) + x0_fit_ao, rad * np.sin(ang_fit) + y0_fit_ao, ls='--', c="red",
-                 lw=3)  # Zero-vel
-        ax1.plot(-rad * np.sin(ang_fit) + x0_fit_ao, rad * np.cos(ang_fit) + y0_fit_ao, ls='--', c="lime",
-                 lw=3)  # Major ax
+        my_funcs.draw_kin_and_zero_vel_axes(ax1, rad, ang_fit, x0_fit_ao, y0_fit_ao)
         cs = ax1.contour(x_ao, y_ao, vel_fit_ao[0], cmap=mpl.cm.RdYlBu_r, interpolation='none')
         ax1.set_title(r'$\mathrm{Best\,\, model}$', size=23)
         ax1.contour(cs, colors='k')
@@ -1710,52 +1673,52 @@ def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_
 
     make_plots()
 
-    # results = ascii.read(f'{path}/results/results_table.csv')
-    # results.add_row([galaxy,
-    #                  "comb",
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_2rh),
-    #                  '{:.1f}'.format(j_3rh),
-    #                  '{:.1f}'.format(j_model_ao),
-    #                  '{:.1f}'.format(j_model_NS),
-    #                  '{:.1f}'.format(j_approx),
-    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.1f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit)))))),
-    #                  '{:.1f}'.format(j_1rh),
-    #                  '{:.1f}'.format(x0_fit_ao),
-    #                  '{:.1f}'.format(y0_fit_ao),
-    #                  '{:.1f}'.format(x0_fit_ns),
-    #                  '{:.1f}'.format(y0_fit_ns),
-    #                  '{:.1f}'.format(x0_phot),
-    #                  '{:.1f}'.format(y0_phot)
-    #                  ])
-    # ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
-    #
-    # results = ascii.read(f'{path}/results/results_table_short.csv')
-    # results.add_row([galaxy,
-    #                  "comb",
-    #                  '{:.1f}'.format(pa_fit),
-    #                  '{:.1f}'.format(inc_fit),
-    #                  '{:.2f}'.format(r_d_min * kpc_per_pix),
-    #                  '{:.2f}'.format(rflat_fit * kpc_per_pix),
-    #                  '{:.1f}'.format(vflat_fit),
-    #                  '{:.1f}'.format(j_3rh),
-    #                  '{:.1f}'.format(j_model),
-    #                  '{:.1f}'.format(j_approx),
-    #                  '{:.1f}'.format(np.degrees(np.arcsin(np.abs(np.sin(np.radians(pa_fit) - np.radians(pa_fit))))))
-    #                  ])
-    # ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
+    results = ascii.read(f'{path}/results/results_table.csv')
+    results.add_row([galaxy,
+                     "comb",
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_2rh),
+                     '{:.1f}'.format(j_3rh),
+                     '{:.1f}'.format(j_model_ao),
+                     '{:.1f}'.format(j_model_NS),
+                     '{:.1f}'.format(j_approx),
+                     '{:.2f}'.format(r_d_min * kpc_per_pix),
+                     '{:.1f}'.format(r_d_min * kpc_per_pix),
+                     '{:d}'.format(int(pa_fit)),
+                     '{:.1f}'.format(j_1rh),
+                     '{:.1f}'.format(x0_fit_ao),
+                     '{:.1f}'.format(y0_fit_ao),
+                     '{:.1f}'.format(x0_fit_ns),
+                     '{:.1f}'.format(y0_fit_ns),
+                     '{:.1f}'.format(x0_phot),
+                     '{:.1f}'.format(y0_phot)
+                     ])
+    ascii.write(results, f'{path}/results/results_table.csv', delimiter=',')
+
+    results = ascii.read(f'{path}/results/results_table_short.csv')
+    results.add_row([galaxy,
+                     "comb",
+                     '{:.1f}'.format(pa_fit),
+                     '{:.1f}'.format(inc_fit),
+                     '{:.2f}'.format(r_d_min * kpc_per_pix),
+                     '{:.2f}'.format(rflat_fit * kpc_per_pix),
+                     '{:.1f}'.format(vflat_fit),
+                     '{:.1f}'.format(j_3rh),
+                     '{:.1f}'.format(j_model),
+                     '{:.1f}'.format(j_approx),
+                     '{:d}'.format(int(pa_fit))
+                     ])
+    ascii.write(results, f'{path}/results/results_table_short.csv', delimiter=',')
 
     print(colored("Finished", "green"), colored(galaxy, "green"), colored("(combined)", "green"))
 

@@ -42,14 +42,17 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
     if res == 'NS':
 
         kpc_per_pix = gal.pixscale_ns / 3600 / 180 * np.pi * angulardistance(gal.z_ao) * 1000
+        # print(kpc_per_pix)
+        # import sys
+        # sys.exit()
         rflat_lim = 9 / kpc_per_pix
         r_d_pix = gal.r_d / kpc_per_pix
-        vflat_max = np.nanmax(vel_data_ns)
         y, x = np.indices([vel_data_ns.shape[0], vel_data_ns.shape[1]])
         vmap_er_ns[vmap_er_ns == 0] = np.nan
         ndim = 6
         constant_inputs = [vel_data_ns, pixscale, r_d_pix, l0, wav, NS_kernel, AO_kernel,
-                           gal.z_ao, gal.x0_ns, gal.y0_ns, inc_axis_ratio, rflat_lim, vflat_max]
+                           gal.z_ao, gal.x0_ns, gal.y0_ns, inc_axis_ratio, rflat_lim, np.nanmax(vel_data_ns)]
+
 
         if type_run=="run":
 
@@ -80,7 +83,7 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
             rflat = results[2]
             rflat /= kpc_per_pix
             results = results[0:-2]
-            sampler   = None
+            sampler = None
 
         save_all = make_plots.individual(i, 0, results, x0_phot, y0_phot, r_d_pix, pixscale, resolution_ratio,
                                          kpc_per_pix, sigma_ns, sigma_ao, sampler, steps, hst_pixscale, type_run,
@@ -89,14 +92,16 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
     if res == 'AO':
 
         kpc_per_pix = gal.pixscale_ao / 3600 / 180 * np.pi * angulardistance(gal.z_ao) * 1000  # Calculate kpc per pixel
+        # print(kpc_per_pix)
+        # import sys
+        # sys.exit()
         rflat_lim = 9 / kpc_per_pix
         r_d_pix = gal.r_d / kpc_per_pix
-        vflat_max = np.nanmax(vel_data_ao)
         y, x = np.indices([vel_data_ao.shape[0], vel_data_ao.shape[1]])
         vmap_er_ao[vmap_er_ao == 0] = np.nan
         ndim = 6
         constant_inputs = [vel_data_ao, pixscale, r_d_pix, l0, wav, NS_kernel, AO_kernel,
-                           gal.z_ao, gal.x0_ao, gal.y0_ao, inc_axis_ratio, rflat_lim, vflat_max]
+                           gal.z_ao, gal.x0_ao, gal.y0_ao, inc_axis_ratio, rflat_lim, np.nanmax(vel_data_ao)]
 
         if type_run=="run":
 

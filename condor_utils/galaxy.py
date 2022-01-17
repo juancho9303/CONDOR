@@ -116,6 +116,3 @@ class Galaxy:
             ]
 
         return p0
-
-if __name__ == "__main__":
-    Galaxy()

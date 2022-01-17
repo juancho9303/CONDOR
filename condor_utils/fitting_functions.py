@@ -6,9 +6,12 @@ from plotbin.plot_velfield import plot_velfield
 from regions import PixCoord, CirclePixelRegion, EllipsePixelRegion
 from scipy.interpolate import interp1d
 from scipy import interpolate
+import scipy
 from copy import copy
 from astropy.convolution import convolve, convolve_fft, Gaussian2DKernel
 import pyfftw
+import itertools
+from lmfit import Parameters,minimize, fit_report
 
 import numba
 from astropy.io import fits, ascii
@@ -668,7 +671,7 @@ def rebin(a, shape):
 
 #-------------------------------------------------------------------------------------------
 @numba.jit(nopython=True)
-def singlekmos(par,x):
+def singlegaussian(par,x):
     '''
     Single Gaussian function
     '''
@@ -716,7 +719,7 @@ def lnprior_cube(param, x0_fixed, y0_fixed, inc_fixed, rflat_lim, vflat_max):
     if (0 < pa < 360
         and (inc_fixed-3) < inc < (inc_fixed+3)
         and 0.1 < rflat < rflat_lim
-        and 50 < vflat < (vflat_max/np.sin(np.radians(inc_fixed))+20)
+        and 50 < vflat < (vflat_max/np.sin(np.radians(inc_fixed))+50)
         and (x0_fixed - 1.5) < x0 < (x0_fixed + 1.5)
         and (y0_fixed - 1.5) < y0 < (y0_fixed + 1.5)):
 
@@ -760,7 +763,7 @@ def lnprior_combine_cube(param, x0_ns_fixed, y0_ns_fixed, x0_ao_fixed, y0_ao_fix
     if (0 < pa < 360
         and (inc_fixed-3) < inc < (inc_fixed+3)
         and 0.1 < rflat < rflat_lim
-        and 50 < vflat < (vflat_max/np.sin(np.radians(inc_fixed))+20)
+        and 50 < vflat < (vflat_max/np.sin(np.radians(inc_fixed))+50)
         and (x0_ns_fixed - 1.5) < x0_ns < (x0_ns_fixed + 1.5)
         and (y0_ns_fixed - 1.5) < y0_ns < (y0_ns_fixed + 1.5)
         and (x0_ao_fixed - 1.5) < x0_ao < (x0_ao_fixed + 1.5)
@@ -808,6 +811,15 @@ def lnprob_combine_cube(param, vel_ns, x_ns, y_ns, var_ns, model_ns, constant_in
     return lp + Lg_combine_cube(param, vel_ns, x_ns, y_ns, var_ns, model_ns, constant_inputs_ns, vel_ao, x_ao, y_ao,
                                 var_ao, model_ao, constant_inputs_ao, i, resolution_ratio)
 
+#--------------------------------------------------------------------------------------------------------------------
+
+def lmfit_gaussian(params, x, y):
+    x00 = params['x00']
+    I = params['I']
+    sig = params['sig']
+    Hafit = (I / sig / np.sqrt(2.0 * np.pi)) * np.exp(-0.5 * (x - x00) ** 2 / sig ** 2)
+    return Hafit - y
+
 #-----------------------------------------------------------------------------------------------------------------------
 #@numba.jit(nopython=True)
 def ns_maps(i, inputs, constant_inputs):
@@ -822,30 +834,57 @@ def ns_maps(i, inputs, constant_inputs):
     vel_model[np.isnan(vel_data)] = np.nan
     den_model = density_profile_mcmc(x, y, 1, r_d_min, x0, y0, inc, pa)[0]
     den_model[np.isnan(vel_data)] = 0
-
     lc = vel_model * l0 / 3e5 + l0
-    cube = np.zeros([len(wav), vel_model.shape[0], vel_model.shape[1]])
-    for ii in range(vel_model.shape[0]):
-        for jj in range(vel_model.shape[1]):
-            cube[:, ii, jj] = singlekmos([lc[ii, jj], den_model[ii, jj], 1.79], wav)
 
+    # Create cube
+    cube = np.zeros([len(wav), vel_model.shape[0], vel_model.shape[1]])
+    for ii, jj in itertools.product(np.arange(0, vel_model.shape[0],1), np.arange(0, vel_model.shape[1],1)):
+        cube[:, ii, jj] = singlegaussian([lc[ii, jj], den_model[ii, jj], 1.79], wav)
+
+    # Convolve cube
     for k in range(len(cube[:, 1, 1])):
         #cube[k] = convolve_fft(cube[k], NS_kernel, preserve_nan=True, normalize_kernel=True, fftn=pyfftw.interfaces.scipy_fft.fft)
-        cube[k] = convolve(cube[k], NS_kernel, boundary='extend', preserve_nan=True, normalize_kernel=True)
+        #cube[k] = convolve(cube[k], NS_kernel, boundary='extend', preserve_nan=True, fill_value=np.nan,
+        #                   nan_treatment='fill', normalize_kernel=True, mask=vel_data)
+        cube[k] = convolve(cube[k], NS_kernel, boundary='extend', preserve_nan=True, normalize_kernel=True)#False,
+                           #mask=vel_data, fill_value=np.nan, nan_treatment='fill')
 
     cube[np.isnan(cube)] = 0.
     vel_modelll = copy(vel_model)
-    for iii in range(vel_model.shape[0]):
-        for jjj in range(vel_model.shape[1]):
-            if cube[:, iii, jjj].any() == np.nan:
-                vel_modelll[iii, jjj] = np.nan
 
-            p0 = [lc[iii,jjj], den_model[iii,jjj], 1.79]
-            output_parameters, covariance_matrix = cf(gaussian, wav, cube[:, iii, jjj], p0=p0)
-            # if iii==12 and jjj==12:
-            #     plt.plot(wav, cube[:, iii, jjj])
-            #     plt.show()
-            vel_modelll[iii, jjj] = 3e5 * (output_parameters[0] - l0 ) / output_parameters[0]
+    # Fit gaussian to cube
+    for iii, jjj in itertools.product(np.arange(0, vel_model.shape[0], 1), np.arange(0, vel_model.shape[1], 1)):
+        if cube[:, iii, jjj].any() == np.nan:
+            vel_modelll[iii, jjj] = np.nan
+        else:
+            # X = np.linspace(wav[0], wav[-1], 500)
+            # fine_cube = np.interp(X,wav,cube[:, iii, jjj])
+            # x = np.sum(X * fine_cube) / np.sum(fine_cube)
+            # width = np.sqrt(np.abs(np.sum((X - x) ** 2 * fine_cube) / np.sum(fine_cube)))
+            # max = fine_cube.max()
+            # fit = singlegaussian([x, max, width], X)
+            # vel_modelll[iii, jjj] = 3e5 * (X[np.argmax(fit, axis=0)] - l0) / X[np.argmax(fit, axis=0)]
+
+            # The proper line fitting (uncomment in Ozstar):
+            p0 = [lc[iii, jjj], den_model[iii, jjj], 1.79]
+            output_parameters, covariance_matrix = cf(gaussian, wav, cube[:, iii, jjj], p0=p0, ftol=0.5, xtol=0.5)
+            bounds=([wav[0], 0.0, 1],[wav[-1], 10, 2]),
+            vel_modelll[iii, jjj] = 3e5 * (output_parameters[0] - l0) / output_parameters[0]
+
+        # # Using lmfit (slower)
+        # params = Parameters()
+        # params.add('x00', min=wav[0], max=wav[-1])
+        # params.add('I', value=den_model[iii, jjj], min=0.0, max=1.0)
+        # params.add('sig', value=1.79,min=1.0, max=2.0)
+        #
+        # fitted_params = minimize(lmfit_gaussian, params, args=(wav, cube[:, iii, jjj],), method='least_squares')
+        #
+        # x00 = fitted_params.params['x00'].value
+        # I = fitted_params.params['I'].value
+        # sig = fitted_params.params['sig'].value
+
+        #vel_modelll[iii, jjj] = 3e5 * (x00 - l0) / x00
+
 
     vel_modelll[np.isnan(vel_data)] = np.nan
 
@@ -867,23 +906,34 @@ def ao_maps(i, inputs, constant_inputs):
 
     lc = vel_model * l0 / 3e5 + l0
     cube = np.zeros([len(wav), vel_model.shape[0], vel_model.shape[1]])
-    for ii in range(vel_model.shape[0]):
-        for jj in range(vel_model.shape[1]):
-            cube[:, ii, jj] = singlekmos([lc[ii, jj], den_model[ii, jj], 1.79], wav)
+    for ii, jj in itertools.product(np.arange(0, vel_model.shape[0], 1), np.arange(0, vel_model.shape[1], 1)):
+        cube[:, ii, jj] = singlegaussian([lc[ii, jj], den_model[ii, jj], 1.79], wav)
 
     for k in range(len(cube[:, 1, 1])):
         cube[k] = convolve(cube[k], AO_kernel, boundary='extend', preserve_nan=True, normalize_kernel=True)
 
     cube[np.isnan(cube)] = 0.
     vel_modelll = copy(vel_model)
-    for iii in range(vel_model.shape[0]):
-        for jjj in range(vel_model.shape[1]):
-            if cube[:, iii, jjj].any() == np.nan:
-                vel_modelll[iii, jjj] = np.nan
+    for iii, jjj in itertools.product(np.arange(0, vel_model.shape[0], 1), np.arange(0, vel_model.shape[1], 1)):
+        if cube[:, iii, jjj].any() == np.nan:
+            vel_modelll[iii, jjj] = np.nan
+        else:
+            # X = np.linspace(wav[0], wav[-1], 500)
+            # fine_cube = np.interp(X, wav, cube[:, iii, jjj])
+            # x = np.sum(X * fine_cube) / np.sum(fine_cube)
+            # width = np.sqrt(np.abs(np.sum((X - x) ** 2 * fine_cube) / np.sum(fine_cube)))
+            # max = fine_cube.max()
+            # fit = singlegaussian([x, max, width], X)
+            # vel_modelll[iii, jjj] = 3e5 * (X[np.argmax(fit, axis=0)] - l0) / X[np.argmax(fit, axis=0)]
+            # p0 = [lc[iii, jjj], den_model[iii, jjj], 1.79]
+            # output_parameters, covariance_matrix = cf(gaussian, wav, cube[:, iii, jjj], p0=p0)
+            # vel_modelll[iii, jjj] = 3e5 * (output_parameters[0] - l0) / output_parameters[0]
 
             p0 = [lc[iii, jjj], den_model[iii, jjj], 1.79]
-            output_parameters, covariance_matrix = cf(gaussian, wav, cube[:, iii, jjj], p0=p0)
+            output_parameters, covariance_matrix = cf(gaussian, wav, cube[:, iii, jjj], p0=p0, ftol=0.5, xtol=0.5)
+            bounds = ([wav[0], 0.0, 1], [wav[-1], 10, 2]),
             vel_modelll[iii, jjj] = 3e5 * (output_parameters[0] - l0) / output_parameters[0]
+
 
     vel_modelll[np.isnan(vel_data)] = np.nan
 
@@ -904,9 +954,8 @@ def ns_maps_make_cube(i, inputs, constant_inputs):
 
     lc = vel_model * l0 / 3e5 + l0
     cube = np.zeros([len(wav), vel_model.shape[0], vel_model.shape[1]])
-    for ii in range(vel_model.shape[0]):
-        for jj in range(vel_model.shape[1]):
-            cube[:, ii, jj] = singlekmos([lc[ii, jj], den_model[ii, jj], 1.79], wav)
+    for ii, jj in itertools.product(np.arange(0, vel_model.shape[0], 1), np.arange(0, vel_model.shape[1], 1)):
+        cube[:, ii, jj] = singlegaussian([lc[ii, jj], den_model[ii, jj], 1.79], wav)
 
     original_cube = copy(cube)
 
@@ -931,9 +980,8 @@ def ao_maps_make_cube(i, inputs, constant_inputs):
 
     lc = vel_model * l0 / 3e5 + l0
     cube = np.zeros([len(wav), vel_model.shape[0], vel_model.shape[1]])
-    for ii in range(vel_model.shape[0]):
-        for jj in range(vel_model.shape[1]):
-            cube[:, ii, jj] = singlekmos([lc[ii, jj], den_model[ii, jj], 1.79], wav)
+    for ii, jj in itertools.product(np.arange(0, vel_model.shape[0], 1), np.arange(0, vel_model.shape[1], 1)):
+        cube[:, ii, jj] = singlegaussian([lc[ii, jj], den_model[ii, jj], 1.79], wav)
 
     original_cube = copy(cube)
 
@@ -1197,6 +1245,37 @@ def print_in_terminal(**params):
 
 #----------------------------------------------------------------------------------------------------------------------
 
+def fits_data(fitsfile):
 
+    """
+    Simply get the data from a fits file
+    """
+    hdul = fits.open(fitsfile)[0].data
+    return hdul
 
+#------------------------------------------------------------------------------------------------------------------
 
+def normalize_kernel(kernel):
+    """
+    Normalize the kernel so that it doesn't have to be done in the convolve routine
+    """
+    return kernel / kernel.sum()
+
+#-------------------------------------------------------------------------------------------------------------------
+
+def remove_ticks(axs):
+    """
+    Takes a list of axes [ax1,ax2...etc] and removes the ticks and sets a black background for easy visualization
+    """
+    for ax in axs:
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_facecolor('black')
+
+#---------------------------------------------------------------------------------------------------------------------
+
+def draw_kin_and_zero_vel_axes(ax, rad, ang, x0, y0):
+    ax.plot(rad * np.cos(ang) + x0, rad * np.sin(ang) + y0, ls='--', c="red",
+             lw=3)  # Zero-vel
+    ax.plot(-rad * np.sin(ang) + x0, rad * np.cos(ang) + y0, ls='--', c="lime",
+             lw=3)  # Major ax

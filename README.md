@@ -76,4 +76,4 @@ Future versions will include:
 Acknowledgement
 ---------------
 CONDOR has been written as part of my PhD work at the Centre for Astrophysics and Supercomputing at
-Swinburne University of Technology.
+Swinburne University of Technology (2019-2022).

@@ -17,7 +17,7 @@ Finally, the code calculates the angular momentum content of the galaxy assuming
 ![image](https://user-images.githubusercontent.com/14315715/149685218-671363ff-1dff-4399-b25e-b689519ced35.png)
 
 
-For more details on what CONDOR does, see: https://academic.oup.com/mnras/article/509/2/2318/6375429?guestAccessKey=a381c4ed-ab7b-4e7a-ba09-f837542541f7
+For more details on what CONDOR does, see: https://doi.org/10.1093/mnras/stab2755
 
 
 Usage

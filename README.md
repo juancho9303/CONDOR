@@ -27,14 +27,11 @@ Some basic settings need to be done in order to run the pipeline.
 
 The basic workflow is as follows:
 
-- Set up a ".txt" or ".dat" file specifying the input parameterts for the geometrical deprojection of the disk (inclination, position angle, size), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk:
+- Set up a ".txt" or ".dat" file specifying the input parameterts for the geometrical deprojection of the disk (inclination, position angle, size, pixelscale), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk (the input parameters are merely a first guess that the code will use as priors for the mcmc resampling):
 
 ![image](https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png)
 
-
-The input parameters are merely a first guess that the code will use as priors for the mcmc resampling.
-
-.. _defaults:
+- The input data are fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each datasete.g. "galaxy_vel_AO.fits", "galaxy_vel_NS.fits", "galaxy_velerr_AO.fits", "galaxy_velerr_NS.fits", "galaxy_PSF_AO.fits", "galaxy_PSF_NS.fits".
 
 Defaults
 --------

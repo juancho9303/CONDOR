@@ -32,7 +32,7 @@ The basic workflow is as follows:
 ![image](https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png)
 
 
-Allry.
+The input parameters are merely a first guess that the code will use as priors for the mcmc resampling.
 
 .. _defaults:
 

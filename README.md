@@ -33,22 +33,22 @@ The basic workflow is as follows:
 
 ![image](https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png)
 
-- The input data are .fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each datasete.g. _**galaxy_vel_AO.fits**_, _**galaxy_vel_NS.fits**_, _**galaxy_velerr_AO.fits**_, _**galaxy_velerr_NS.fits**_, _**galaxy_PSF_AO.fits**_, _**galaxy_PSF_NS.fits**_.
+- The input data are .fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each dataset e.g. _**galaxy_vel_AO.fits**_, _**galaxy_vel_NS.fits**_, _**galaxy_velerr_AO.fits**_, _**galaxy_velerr_NS.fits**_, _**galaxy_PSF_AO.fits**_, _**galaxy_PSF_NS.fits**_.
 
 Running the code
 --------
 
 Once the main files (_**run_code.py**_, _**data_parameters.csv**_ and kinematic maps) are set up correctly, t**he code is run using: "python run_code.py ID data walkers steps type"
 
-ID = galaxy identifier (depends on your own list of targets)
+**ID** = galaxy identifier (depends on your own list of targets)
 
-data = ["NS", "AO", "combined"]
+**data** = ["NS", "AO", "combined"]
 
-walkers = number of walkers (integer)
+**walkers** = number of walkers (integer)
 
-steps = number of steps (integer)
+**steps** = number of steps (integer)
 
-type = ["plot","run"]
+**type** = ["plot","run"]
 
 Examples
 --------
@@ -60,7 +60,7 @@ To run the code combining the resolution, with 100 walkers and 1000 steps, for g
 
     python run_code.py 12 combined 100 1000 run
 
-To run the code for the adaptive optics "AO" data only of galaxy with ID 29, but only to plot previoulsy ran calculations, which simply reads the "results.csv" file, do:
+To run the code for the adaptive optics "AO" data only of galaxy with ID 29, but only to plot previoulsy ran calculations, which simply reads the _**results.csv**_ file, do:
 
     python run_code.py 29 AO 150 2000 plot
 
@@ -75,7 +75,9 @@ Future versions will include:
 
 - Multiple kinematic models.
 
-Acknowledgement
+Acknowledgements
 ---------------
 CONDOR has been written as part of my PhD work at the Centre for Astrophysics and Supercomputing at
 Swinburne University of Technology (2019-2022).
+
+This package uses multiple python libraries including _scipy, astropy, emcee, matplotlib, pandas, itertools and numba_. The calculations perfomed in CONDOR are only possible thanks to the efforts of the multiple developers that have written these tools and libraries.

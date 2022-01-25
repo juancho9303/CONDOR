@@ -68,6 +68,11 @@ Note that in the last example the number of walkers and steps are ignored so the
 
 The code will show you the posterior distributions in corner plots as in the following example:
 
+[Deep3a-15504_combined_corner.pdf](https://github.com/juancho9303/CONDOR/files/7930539/Deep3a-15504_combined_corner.pdf)
+
+It will also show you the residual maps (model - data) for user's assessment of the results:
+
+[Deep3a-15504_combined_model_and_residuals.pdf](https://github.com/juancho9303/CONDOR/files/7930543/Deep3a-15504_combined_model_and_residuals.pdf)
 
 
 **NOTE:** Since this code has been optimized for a very specific set of data, setting everything up for your data might require some teaking in the code itself so please feel free to reach out to me if you  need help at jespejosalcedo@swin.edu.au

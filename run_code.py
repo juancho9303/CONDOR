@@ -17,7 +17,7 @@ walkers = number of walkers (integer)
 steps = number of steps (integer)
 type = ["plot","run"]
 
-For an explanation of the code and method see Espejo Salcedo et al. 2021 (https://arxiv.org/abs/2109.10614)
+For an explanation of the code and method see Espejo Salcedo et al. 2021 (https://doi.org/10.1093/mnras/stab2755)
 """
 from __future__ import print_function
 import gc, sys, os

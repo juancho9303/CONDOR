@@ -28,6 +28,7 @@ import warnings
 from pathlib import Path
 import pandas as pd
 from scipy import ndimage, misc
+import glob
 
 from astropy.io import fits, ascii
 import matplotlib.pyplot as plt
@@ -50,7 +51,7 @@ types = ["inten", "vel", "velerr"]  # H alpha intensity, vel map and vel error
 
 
 # Load all galaxy parameters
-def load_parameters(i):
+def load_pars(i):
     gal = Galaxy(par.name[i],
                  par.z_ns[i],
                  par.halpha_ns[i],
@@ -110,35 +111,51 @@ def load_parameters(i):
 
 # Load all the maps and convolution kernels
 def load_maps(i):
-    maps = np.empty([3, 40, 4], dtype=object)  # Create empty object for all  maps to be stored
-    for k in range(len(types)):
-        maps[0][i][k] = fits.open(f"{path}/../My_AM_code/Data_disks/{load_parameters(i).name}_NS_{types[k]}.fits")[0].data
-        maps[1][i][k] = fits.open(f"{path}/../My_AM_code/Data_disks/{load_parameters(i).name}_AO_{types[k]}.fits")[0].data
 
-    AO_kernel = fits.open(f"{path}/psf_model/AO/{load_parameters(i).name}_ao_model.fits")[0].data
-    AO_kernel = AO_kernel / AO_kernel.sum()
-    NS_kernel = fits.open(f"{path}/psf_model/NS/{load_parameters(i).name}_NS_model.fits")[0].data
-    NS_kernel = NS_kernel / NS_kernel.sum()
+    maps_names = sorted(glob.glob(f"{path}/../My_AM_code/Data_disks/{load_pars(i).name}_*_*.fits"))
+    maps = []
 
-    if load_parameters(i).pa_ao != 0:
-        AO_kernel = ndimage.rotate(AO_kernel, -load_parameters(i).pa_ao, reshape=False)
+    for f in maps_names:
+        maps.append(my_funcs.fits_data(f))
 
-    if load_parameters(i).phot_data == 'H-band':
+    # fig, ((ax1,ax2,ax3),(ax4,ax5,ax6)) = plt.subplots(nrows=2, ncols=3)
+    # ax1.imshow(maps[4])
+    # ax2.imshow(maps[3])
+    # ax3.imshow(maps[5])
+    # ax4.imshow(maps[1])
+    # ax5.imshow(maps[0])
+    # ax6.imshow(maps[2])
+    # plt.show()
+    # sys.exit()
+
+    AO_kernel = my_funcs.fits_data(f"{path}/psf_model/AO/{load_pars(i).name}_ao_model.fits")
+    AO_kernel = my_funcs.normalize_kernel(AO_kernel)
+    NS_kernel = my_funcs.fits_data(f"{path}/psf_model/NS/{load_pars(i).name}_NS_model.fits")
+    NS_kernel = my_funcs.normalize_kernel(NS_kernel)
+    from astropy.convolution import convolve, Gaussian2DKernel
+    NS_kernel = Gaussian2DKernel(2)
+
+    if load_pars(i).pa_ao != 0:
+        AO_kernel = ndimage.rotate(AO_kernel, -load_pars(i).pa_ao, reshape=False)
+
+    #if load_pars(i).phot_data == 'H-band':
+    if load_pars(i).phot_data == 'H+J' or load_pars(i).phot_data == 'H-band':
         den_data = fits.open(
-            f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
-            load_parameters(i).phot_file_name + '_' + load_parameters(i).H_band + '_drz.fits')[0].data
-    elif load_parameters(i).phot_data == 'I-band':
+            f'{path}/../Data/gals_photometry/' + load_pars(i).phot_file_name + '/' +
+            load_pars(i).phot_file_name + '_' + load_pars(i).H_band + '_drz.fits')[0].data
+    elif load_pars(i).phot_data == 'I-band':
         den_data = fits.open(
-            f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
-            load_parameters(i).phot_file_name + '_I_band.fits')[0].data
-    elif load_parameters(i).phot_data == 'K-band':
+            f'{path}/../Data/gals_photometry/' + load_pars(i).phot_file_name + '/' +
+            load_pars(i).phot_file_name + '_I_band.fits')[0].data
+    elif load_pars(i).phot_data == 'K-band':
         den_data = fits.open(
-            f'{path}/../Data/gals_photometry/' + load_parameters(i).phot_file_name + '/' +
-            load_parameters(i).phot_file_name + '_K_band.fits')[0].data
-    elif load_parameters(i).phot_data == 'no-HST':
-        den_data = copy(maps[1][i][0])
+            f'{path}/../Data/gals_photometry/' + load_pars(i).phot_file_name + '/' +
+            load_pars(i).phot_file_name + '_K_band.fits')[0].data
+    elif load_pars(i).phot_data == 'no-HST':
+        den_data = copy(maps[4])
 
-    return maps[0][i][1], maps[0][i][0], maps[0][i][2], maps[1][i][1], maps[1][i][0], maps[1][i][2], AO_kernel, NS_kernel, den_data
+    return maps[4], maps[3], maps[5], maps[1], maps[0], maps[2], AO_kernel, NS_kernel, den_data
+
 
 # Load the previous runs for plotting only
 def load_previous_runs(i, type_of_data):
@@ -188,7 +205,7 @@ if __name__ == "__main__":
         # import yappi
         # yappi.set_clock_type("cpu")  # Use set_clock_type("wall") for wall time
         # yappi.start()
-        get_j(args.galaxy, load_parameters(args.galaxy), load_maps(args.galaxy),
+        get_j(args.galaxy, load_pars(args.galaxy), load_maps(args.galaxy),
                  load_previous_runs(args.galaxy, 'NS'), res='NS', nwalkers = args.nwalkers,
                  steps =args.steps, type_run=args.type_run)
         # yappi.get_func_stats().print_all()
@@ -197,13 +214,13 @@ if __name__ == "__main__":
     if args.resolution == "AO":
         print(colored("Calculating Angular Momentum of", "green"), colored(par.name[args.galaxy], "green"),
               colored("at the AO resolution", "green"))
-        get_j(args.galaxy, load_parameters(args.galaxy), load_maps(args.galaxy),
+        get_j(args.galaxy, load_pars(args.galaxy), load_maps(args.galaxy),
                  load_previous_runs(args.galaxy, 'AO'), res='AO', nwalkers = args.nwalkers,
                  steps =args.steps, type_run=args.type_run)
 
     if args.resolution == "combined":
         print(colored("Calculating Angular Momentum of", "green"), colored(par.name[args.galaxy], "green"),
               colored("combining the resolutions", "green"))
-        get_j(args.galaxy, load_parameters(args.galaxy), load_maps(args.galaxy),
+        get_j(args.galaxy, load_pars(args.galaxy), load_maps(args.galaxy),
                  load_previous_runs(args.galaxy, 'combined'), res='combined', nwalkers = args.nwalkers,
                  steps =args.steps, type_run=args.type_run)

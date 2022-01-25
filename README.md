@@ -66,6 +66,10 @@ To run the code for the adaptive optics "AO" data only of galaxy with ID 29, but
 
 Note that in the last example the number of walkers and steps are ignored so the input values don't have any effect. 
 
+The code will show you the posterior distributions in corner plots as in the following example:
+
+
+
 **NOTE:** Since this code has been optimized for a very specific set of data, setting everything up for your data might require some teaking in the code itself so please feel free to reach out to me if you  need help at jespejosalcedo@swin.edu.au
 
 Further work

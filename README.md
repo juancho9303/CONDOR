@@ -69,7 +69,13 @@ To run the code for the adaptive optics "AO" data only of galaxy with ID 29, but
 
 Note that in the last example the number of walkers and steps are ignored so the input values don't have any effect. 
 
-The code will save the posterior distributions in corner plots, where you can investigate the covariances as in the following example:
+**Example: Deep3a-15504**
+
+As an example of how the code works, here's the analysis of a star-forming galaxy at z~2.38 from the SINS survey. The data was taken at high- and low-spatial resolutions with the SINFONI IFU instrument at VLT targeting its Hα emission. Additionally, this galaxy has _HST_ H- and J-band photometry as shown in the figure below:
+
+![img_1.png](img_1.png)
+
+When running the combined analysis, the code saves the best-fit parameters in the _**results.csv**_ file and generates different figures for the user's assessment. These include the posterior distributions in corner plots, where you can investigate the covariances as in the following example:
 
 ![image](https://user-images.githubusercontent.com/14315715/150909448-eff9e566-6fee-4035-a108-0a9ea7ad4ad0.png)
 

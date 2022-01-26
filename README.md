@@ -93,9 +93,10 @@ At last, it will show you the model surface brightness profile of the galaxy (ex
 Further work
 ------------
 
-Future versions will include:
+Future versions might include:
 
 - Multiple kinematic models.
+- Complex modelling including bulge-disk decompositions.
 
 Acknowledgements
 ---------------

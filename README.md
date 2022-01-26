@@ -69,13 +69,17 @@ To run the code for the adaptive optics "AO" data only of galaxy with ID 29, but
 
 Note that in the last example the number of walkers and steps are ignored so the input values don't have any effect. 
 
-The code will show you the posterior distributions in corner plots as in the following example:
+The code will save the posterior distributions in corner plots, where you can investigate the covariances as in the following example:
 
 ![image](https://user-images.githubusercontent.com/14315715/150909448-eff9e566-6fee-4035-a108-0a9ea7ad4ad0.png)
 
 It will also show you the residual maps (model - data) for user's assessment of the results:
 
 ![image](https://user-images.githubusercontent.com/14315715/150909507-47ec62f6-196a-40bf-9f16-ae614e103d8d.png)
+
+At last, it will show you the model surface brightness profile of the galaxy (exponential profile in the simplest case) and calculate a cumulative angular momentum profile as shown below:
+
+![img.png](img.png)
 
 
 **NOTE:** Since this code has been optimized for a very specific set of data, setting everything up for your data might require some teaking in the code itself so please feel free to reach out to me if you  need help at jespejosalcedo@swin.edu.au

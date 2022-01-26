@@ -7,7 +7,7 @@ Introduction
 
 CONDOR is a kinematic fitting code that finds the best kinematic model of a rotating disk galaxy by combining its high- and low-resolution velocity fields. The code is optimized for data acquired with facilities that use adaptive optics (AO) suchs as OSIRIS (Keck) and SINFONI (VLT) and their natural seeing counterparts (NS) with KMOS (VLT). This sample comprises galaxies in the range z~[1.5,2.5].
 
-The code uses a "2.5D" strategy where input data is in 2D but the modelling happens in 3D. First, the code creates model datacubes which match the pixelscale of the input data and are convolved using the right shape of the PSF (Airiy Disk + Moffat in AO and Gaussian in NS). Model velocity fields are extracted from the cubes using an emisison line gaussian fit and then compared to the input data through a MCMC resampling method with emcee. The best kinematic model is thus the model that best represents the input data at both resolutions (or using the individual resolution if desired):
+The code uses a "2.5D" strategy where input data is in 2D but the modelling happens in 3D. First, the code creates model datacubes which match the pixelscale of the input data and are convolved using the right shape of the PSF (Airiy Disk + Moffat in AO and Gaussian in NS). Model velocity fields are extracted from the cubes using an emisison line gaussian fit and then compared to the input data through a MCMC resampling method with _**emcee**_. The best kinematic model is thus the model that best represents the input data at both resolutions (or using the individual resolution if desired):
 
 ![image](https://user-images.githubusercontent.com/14315715/149685240-cfedff11-254e-4f5e-8bd3-71a6df31d28f.png)
 

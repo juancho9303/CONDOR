@@ -14,8 +14,9 @@ The code uses a "2.5D" strategy where input data is in 2D but the modelling happ
 
 Finally, the code calculates the angular momentum content of the galaxy assuming an exponential disk for the surface brightness profile:
 
-![image](https://user-images.githubusercontent.com/14315715/149685218-671363ff-1dff-4399-b25e-b689519ced35.png)
-
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/14315715/149685218-671363ff-1dff-4399-b25e-b689519ced35.png">
+</p>
 
 For more details on what CONDOR does, see: https://doi.org/10.1093/mnras/stab2755
 
@@ -30,8 +31,6 @@ The basic workflow is as follows:
 - The main script is called **_run_code.py_**. It contains the relevant paths and calls the necessary modules within CONDOR's structure. Make sure you run CONDOR at the location of this script.
 
 - Set up a _**data_parameters.csv**_ file specifying the input parameters for the geometrical deprojection of the disk (inclination, position angle, size, pixelscale), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk. Note that these input parameters are merely a first guess that the code will use as priors for the mcmc resampling:
-
-![image](https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png)
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png">

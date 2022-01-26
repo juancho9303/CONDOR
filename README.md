@@ -73,6 +73,10 @@ Note that in the last example the number of walkers and steps are ignored so the
 
 As an example of how the code works, here's the analysis of a star-forming galaxy at z~2.38 from the SINS survey. The data was taken at high- and low-spatial resolutions with the SINFONI IFU instrument at VLT targeting its Hα emission. Additionally, this galaxy has _HST_ H- and J-band photometry as shown in the figure below:
 
+<p align="center">
+  <img src="img_1.png">
+</p>
+
 ![img_1.png](img_1.png)
 
 When running the combined analysis, the code saves the best-fit parameters in the _**results.csv**_ file and generates different figures for the user's assessment. These include the posterior distributions in corner plots, where you can investigate the covariances as in the following example:

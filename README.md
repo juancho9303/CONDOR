@@ -33,6 +33,10 @@ The basic workflow is as follows:
 
 ![image](https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png)
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png">
+</p>
+
 - The input data are .fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each dataset e.g. _**galaxy_vel_AO.fits**_, _**galaxy_vel_NS.fits**_, _**galaxy_velerr_AO.fits**_, _**galaxy_velerr_NS.fits**_, _**galaxy_PSF_AO.fits**_, _**galaxy_PSF_NS.fits**_.
 
 Running the code

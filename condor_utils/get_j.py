@@ -8,6 +8,7 @@ from multiprocessing import Pool
 from copy import copy
 from cosmology_calc import angulardistance
 import plot_and_save_results as make_plots
+#import plot_and_save_results_clumps as make_plots
 from condor_utils import fitting_functions as my_funcs
 
 warnings.filterwarnings("ignore")

@@ -74,7 +74,7 @@ Note that in the last example the number of walkers and steps are ignored so the
 As an example of how the code works, here's the analysis of a star-forming galaxy at z~2.38 from the SINS survey. The data was taken at high- and low-spatial resolutions with the SINFONI IFU instrument at VLT targeting its Hα emission. Additionally, this galaxy has _HST_ H- and J-band photometry as shown in the figure below:
 
 <p align="center">
-  <img src="images/img_1.png">
+  <img src="images/Deep3a_15504.png">
 </p>
 
 When running the combined analysis, the code saves the best-fit parameters in the _**results.csv**_ file and generates different figures for the user's assessment. These include the posterior distributions in corner plots, where you can investigate the covariances as in the following example:
@@ -87,7 +87,7 @@ It will also show you the residual maps (model - data) for user's assessment of 
 
 At last, it will show you the model surface brightness profile of the galaxy (exponential profile in the simplest case) and calculate a cumulative angular momentum profile as shown below:
 
-![img.png](images/img.png)
+![img.png](images/SB.png)
 
 
 **NOTE:** Since this code has been optimized for a very specific set of data, setting everything up for your data might require some teaking in the code itself so please feel free to reach out to me if you  need help at jespejosalcedo@swin.edu.au
@@ -105,4 +105,5 @@ Acknowledgements
 CONDOR has been written as part of my PhD work at the Centre for Astrophysics and Supercomputing at
 Swinburne University of Technology (2019-2022).
 
-This package uses multiple python libraries including _scipy, astropy, emcee, matplotlib, pandas, itertools and numba_. The calculations perfomed in CONDOR are only possible thanks to the efforts of the multiple developers that have written these tools and libraries.
+This package uses multiple python libraries including _[Numpy](https://numpy.org/install/), [Scipy](https://www.scipy.org/install.html), [Astropy](https://www.astropy.org/), emcee, matplotlib, pandas, itertools and numba_. The calculations perfomed in CONDOR are only possible thanks to the efforts of the multiple developers that have written these tools and libraries.
+

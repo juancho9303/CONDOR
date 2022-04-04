@@ -28,7 +28,7 @@ Some basic settings need to be applied in order to run the pipeline.
 
 The basic workflow is as follows:
 
-- The main script is called **_run_code.py_**. It contains the relevant paths and calls the necessary modules within CONDOR's structure. Make sure you run CONDOR at the location of this script.
+- The main script is called `run_code.py`. It contains the relevant paths and calls the necessary modules within CONDOR's structure. Make sure you run CONDOR at the location of this script.
 
 - Set up a _**data_parameters.csv**_ file specifying the input parameters for the geometrical deprojection of the disk (inclination, position angle, size, pixelscale), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk. Note that these input parameters are merely a first guess that the code will use as priors for the mcmc resampling:
 

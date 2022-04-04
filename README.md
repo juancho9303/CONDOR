@@ -30,13 +30,13 @@ The basic workflow is as follows:
 
 - The main script is called `run_code.py`. It contains the relevant paths and calls the necessary modules within CONDOR's structure. Make sure you run CONDOR at the location of this script.
 
-- Set up a _**data_parameters.csv**_ file specifying the input parameters for the geometrical deprojection of the disk (inclination, position angle, size, pixelscale), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk. Note that these input parameters are merely a first guess that the code will use as priors for the mcmc resampling:
+- Set up a `data_parameters.csv` file specifying the input parameters for the geometrical deprojection of the disk (inclination, position angle, size, pixelscale), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk. Note that these input parameters are merely a first guess that the code will use as priors for the mcmc resampling:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png">
 </p>
 
-- The input data are .fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each dataset e.g. _**galaxy_vel_AO.fits**_, _**galaxy_vel_NS.fits**_, _**galaxy_velerr_AO.fits**_, _**galaxy_velerr_NS.fits**_, _**galaxy_PSF_AO.fits**_, _**galaxy_PSF_NS.fits**_.
+- The input data are .fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each dataset e.g. `galaxy_vel_AO.fits`, `galaxy_vel_NS.fits`, `galaxy_velerr_AO.fits`, `galaxy_velerr_NS.fits`, `galaxy_PSF_AO.fits`, `galaxy_PSF_NS.fits`.
 
 Running the code ⚙️
 --------
@@ -109,5 +109,5 @@ Acknowledgements
 CONDOR has been written as part of my PhD work at the Centre for Astrophysics and Supercomputing at
 Swinburne University of Technology (2019-2022).
 
-This package uses multiple python libraries including _[Numpy](https://numpy.org/install/), [Scipy](https://www.scipy.org/install.html), [Astropy](https://www.astropy.org/), emcee, matplotlib, pandas, itertools and numba_. The calculations perfomed in CONDOR are only possible thanks to the efforts of the multiple developers that have written these tools and libraries.
+This package uses multiple python libraries including [Numpy](https://numpy.org/install/), [Scipy](https://www.scipy.org/install.html), [Astropy](https://www.astropy.org/), [emcee](https://emcee.readthedocs.io/en/stable/emcee), [matplotlib](https://matplotlib.org/), [pandas](https://pandas.pydata.org/), [itertools](https://docs.python.org/3/library/itertools.html) and [numba](https://numba.pydata.org/). The calculations perfomed in CONDOR are only possible thanks to the efforts of the multiple developers that have written these tools and libraries.
 

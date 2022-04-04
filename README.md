@@ -28,7 +28,7 @@ Some basic settings need to be applied in order to run the pipeline.
 
 The basic workflow is as follows:
 
-- The main script is called `run_code.py`. It contains the relevant paths and calls the necessary modules within CONDOR's structure. Make sure you run CONDOR at the location of this script.
+- The main script is called `run_condor.py`. It contains the relevant paths and calls the necessary modules within CONDOR's structure. Make sure you run CONDOR at the location of this script.
 
 - Set up a `data_parameters.csv` file specifying the input parameters for the geometrical deprojection of the disk (inclination, position angle, size, pixelscale), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk. Note that these input parameters are merely a first guess that the code will use as priors for the mcmc resampling:
 
@@ -41,17 +41,17 @@ The basic workflow is as follows:
 Running the code ⚙️
 --------
 
-Once the main files (_**run_code.py**_, _**data_parameters.csv**_ and kinematic maps) are set up correctly, the code is run using: "python run_code.py ID data walkers steps type"
+Once the main files (`run_condor.py`, `data_parameters.csv` and kinematic maps) are set up correctly, the code is run using: `python run_code.py ID data walkers steps type` with:
 
-**ID** = galaxy identifier (depends on your own list of targets)
+**ID** = galaxy identifier (_depends on your own list of targets_)
 
-**data** = ["NS", "AO", "combined"]
+**data** = ["NS", "AO", "combined"] (_for single or combined analysis_)
 
-**walkers** = number of walkers (integer)
+**walkers** = number of walkers (_integer, at least ~100 recommended_)
 
-**steps** = number of steps (integer)
+**steps** = number of steps (_integer, at least ~1000 recommended_)
 
-**type** = ["plot","run"]
+**type** = ["plot","run"] (_to simply plot previous results or rerun the pipeline_)
 
 Examples
 --------

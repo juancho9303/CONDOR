@@ -38,10 +38,10 @@ The basic workflow is as follows:
 
 - The input data are .fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each dataset e.g. _**galaxy_vel_AO.fits**_, _**galaxy_vel_NS.fits**_, _**galaxy_velerr_AO.fits**_, _**galaxy_velerr_NS.fits**_, _**galaxy_PSF_AO.fits**_, _**galaxy_PSF_NS.fits**_.
 
-Running the code
+Running the code ⚙️
 --------
 
-Once the main files (_**run_code.py**_, _**data_parameters.csv**_ and kinematic maps) are set up correctly, t**he code is run using: "python run_code.py ID data walkers steps type"
+Once the main files (_**run_code.py**_, _**data_parameters.csv**_ and kinematic maps) are set up correctly, the code is run using: "python run_code.py ID data walkers steps type"
 
 **ID** = galaxy identifier (depends on your own list of targets)
 

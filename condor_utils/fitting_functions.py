@@ -1190,7 +1190,7 @@ def draw_elliptical_psf(sigma_x, sigma_y, theta):
     """
 
     center = PixCoord(x=sigma_x+1, y=sigma_y+1)
-    reg = EllipsePixelRegion(center=center, width=2 * sigma_x, height=2 * sigma_y, angle=theta)
+    reg = EllipsePixelRegion(center=center, width=2.35 * sigma_x, height=2.35 * sigma_y, angle=theta)
     patch = reg.as_artist(facecolor='w', edgecolor='k', color='w', fill=True, lw=1)
 
     return patch
@@ -1272,6 +1272,7 @@ def remove_ticks(axs):
         ax.set_yticks([])
         ax.set_facecolor('black')
 
+
 #---------------------------------------------------------------------------------------------------------------------
 
 def draw_kin_and_zero_vel_axes(ax, rad, ang, x0, y0):
@@ -1279,3 +1280,12 @@ def draw_kin_and_zero_vel_axes(ax, rad, ang, x0, y0):
              lw=3)  # Zero-vel
     ax.plot(-rad * np.sin(ang) + x0, rad * np.cos(ang) + y0, ls='--', c="lime",
              lw=3)  # Major ax
+
+#----------------------------------------------------------------------------------------------------------------------
+
+def calc_j_approx(n, reff, v_s, inc):
+
+    k_n = 1.15 + 0.029*n + 0.062*n**2
+    j_approx = k_n * v_s * reff #* 1/np.sin(np.radians(inc))
+
+    return j_approx

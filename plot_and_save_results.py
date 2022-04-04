@@ -1231,6 +1231,9 @@ def combined(i, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio, kpc_
     j_approx = (1.19 * v_2rh * r_1rh * kpc_per_pix)
     print(colored("j approx =", "blue"), "%.2f" % j_approx)
 
+    #j_approx = my_funcs.calc_j_approx(n, reff, v_2rh, inc_fit) * kpc_per_pix
+    #print(colored("j approx =", "blue"), "%.2f" % j_approx)
+
     extended_radius = np.arange(0, len(binned_vmap[4]) + 8, 1)
 
     # Obtain the cumulative profile of j:

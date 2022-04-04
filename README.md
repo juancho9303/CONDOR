@@ -80,14 +80,14 @@ As an example of how the code works, here's the analysis of a star-forming galax
 When running the combined analysis, the code saves the best-fit parameters in the _**results.csv**_ file and generates different figures for the user's assessment. These include the posterior distributions in corner plots, where you can investigate the covariances as in the following example:
 
 <p align="center">
-  <img src="images/Deep3a-15504_combined_corner.pdf">
+  <img src="images/Deep3a-15504_combined_corner.png">
 </p>
-
-![image](https://user-images.githubusercontent.com/14315715/150909448-eff9e566-6fee-4035-a108-0a9ea7ad4ad0.png)
 
 It will also show you the residual maps (model - data) for user's assessment of the results:
 
-![image](https://user-images.githubusercontent.com/14315715/150909507-47ec62f6-196a-40bf-9f16-ae614e103d8d.png)
+<p align="center">
+  <img src="images/Deep3a-15504_combined_model_and_residuals.png">
+</p>
 
 At last, it will show you the model surface brightness profile of the galaxy (exponential profile in the simplest case) and calculate a cumulative angular momentum profile as shown below:
 

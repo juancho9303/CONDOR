@@ -79,6 +79,10 @@ As an example of how the code works, here's the analysis of a star-forming galax
 
 When running the combined analysis, the code saves the best-fit parameters in the _**results.csv**_ file and generates different figures for the user's assessment. These include the posterior distributions in corner plots, where you can investigate the covariances as in the following example:
 
+<p align="center">
+  <img src="images/Deep3a-15504_combined_corner.pdf">
+</p>
+
 ![image](https://user-images.githubusercontent.com/14315715/150909448-eff9e566-6fee-4035-a108-0a9ea7ad4ad0.png)
 
 It will also show you the residual maps (model - data) for user's assessment of the results:

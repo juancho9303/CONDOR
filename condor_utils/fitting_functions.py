@@ -9,9 +9,9 @@ from scipy import interpolate
 import scipy
 from copy import copy
 from astropy.convolution import convolve, convolve_fft, Gaussian2DKernel
-import pyfftw
+#import pyfftw
 import itertools
-from lmfit import Parameters,minimize, fit_report
+#from lmfit import Parameters,minimize, fit_report
 
 import numba
 from astropy.io import fits, ascii

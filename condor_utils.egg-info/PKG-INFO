@@ -1,90 +1,252 @@
-Metadata-Version: 1.1
-Name: condor-utils
+Metadata-Version: 2.1
+Name: condor_utils
 Version: 0.0.1
-Summary: CONDOR utillities
-Home-page: UNKNOWN
+Summary: CONDOR utilities
 Author: Juan Espejo
 Author-email: juancho9303@gmail.com
-License: UNKNOWN
-Description: # CONDOR (COsmic Noon Dynamics with Optimised Resolutions)
-        
-        ![logo](logo.jpeg)
-        
-        Introduction
-        ------------
-        
-        CONDOR does this and that.
-        
-        For more on CONDOR see: https://arxiv.org/abs/2109.10614
-        
-        
-        Usage
-        -----
-        
-        Us.
-        
-        The basic workflow is as follows:
-        
-        - Creme.
-        
-        Allry.
-        
-        .. _defaults:
-        
-        Defaults
-        --------
-        
-        The default values:
-        
-        - Thce::
-        
-          variable = value
-          variable2 = value2
-          ...
-        
-        Th
-        
-        Examples
-        --------
-        Do this and that with ``data_``::
-        
-            from pypegase import *
-            import matplotlib.pyplot as plt
-        
-            PEGASE.pegase_dir = '/home/me/PEGASE.2/' # unless PEGASE_HOME is set
-        
-            peg = PEGASE('mydata') # default IMF, Scenario, etc
-            peg.generate() # some minutes may be required, console will show progress
-            colors = peg.colors()
-            colors['B-V'][-1] # B-V color at last timestep (20 Gyr) = .922
-            plt.plot(colors['time'], colors['B-V']) # plot times versus B-V color
-            plt.legend(loc = 'lower right', numpoints=1)
-        
-            peg.save_to_file(peg.name + '.peg')
-        
-        .. image:: images/example1.png
-        
-        Plotting a co
-        
-        .. image:: images/example.png
-        
-        Further work
-        ------------
-        
-        Future versions will include:
-        
-        - PaI
-        
-        Acknowledgement
-        ---------------
-        CONDOR has been written as part of my PhD work at the Centre for Astrophysics and Supercomputing at
-        Swinburne University of Technology.
-        
-Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.6
 Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
 Classifier: License :: OSI Approved :: BSD License
 Classifier: Operating System :: MacOS
 Classifier: Operating System :: Unix
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Requires-Dist: appnope>=0.1.0
+Requires-Dist: astroid>=2.4.2
+Requires-Dist: astropy>=4.0.1.post1
+Requires-Dist: asttokens>=2.0.5
+Requires-Dist: attrs>=19.3.0
+Requires-Dist: backcall>=0.1.0
+Requires-Dist: bleach>=3.1.5
+Requires-Dist: certifi>=2020.4.5.1
+Requires-Dist: cmasher>=1.6.0
+Requires-Dist: colorspacious>=1.1.2
+Requires-Dist: corner>=2.0.1
+Requires-Dist: cycler>=0.10.0
+Requires-Dist: decorator>=4.4.2
+Requires-Dist: defusedxml>=0.6.0
+Requires-Dist: e13tools>=0.9.6
+Requires-Dist: emcee>=3.0.2
+Requires-Dist: entrypoints>=0.3
+Requires-Dist: executing>=0.8.1
+Requires-Dist: fitsio>=1.1.3
+Requires-Dist: fsps>=0.2.2
+Requires-Dist: galpak>=1.30.3
+Requires-Dist: imageio>=2.8.0
+Requires-Dist: importlib-metadata>=1.6.0
+Requires-Dist: iniconfig>=1.1.1
+Requires-Dist: ipykernel>=5.2.1
+Requires-Dist: ipython>=7.14.0
+Requires-Dist: ipython-genutils>=0.2.0
+Requires-Dist: ipywidgets>=7.5.1
+Requires-Dist: isort>=5.7.0
+Requires-Dist: jedi>=0.17.0
+Requires-Dist: Jinja2>=2.11.2
+Requires-Dist: joblib>=0.15.1
+Requires-Dist: jsonschema>=3.2.0
+Requires-Dist: jupyter-client>=6.1.3
+Requires-Dist: jupyter-console>=6.1.0
+Requires-Dist: jupyter-core>=4.6.3
+Requires-Dist: kiwisolver>=1.2.0
+Requires-Dist: lazy-object-proxy>=1.4.3
+Requires-Dist: line-profiler>=3.0.2
+Requires-Dist: llvmlite>=0.36.0
+Requires-Dist: MarkupSafe>=1.1.1
+Requires-Dist: matplotlib>=3.2.1
+Requires-Dist: mccabe>=0.6.1
+Requires-Dist: mistune>=0.8.4
+Requires-Dist: mpdaf>=3.5
+Requires-Dist: nbconvert>=5.6.1
+Requires-Dist: nbformat>=5.0.6
+Requires-Dist: networkx>=2.4
+Requires-Dist: notebook>=6.0.3
+Requires-Dist: numba>=0.53.1
+Requires-Dist: numpy>=1.18.2
+Requires-Dist: packaging>=20.1
+Requires-Dist: pandas>=1.0.3
+Requires-Dist: pandocfilters>=1.4.2
+Requires-Dist: parso>=0.7.0
+Requires-Dist: patsy>=0.5.1
+Requires-Dist: pexpect>=4.8.0
+Requires-Dist: photutils>=0.7.2
+Requires-Dist: pickleshare>=0.7.5
+Requires-Dist: Pillow>=7.1.1
+Requires-Dist: plotbin>=3.1.3
+Requires-Dist: pluggy>=0.13.1
+Requires-Dist: ppxf>=7.4.1
+Requires-Dist: prometheus-client>=0.7.1
+Requires-Dist: prompt-toolkit>=3.0.5
+Requires-Dist: ptyprocess>=0.6.0
+Requires-Dist: pure-eval>=0.2.1
+Requires-Dist: py>=1.10.0
+Requires-Dist: pyBBarolo>=1.1.5
+Requires-Dist: Pygments>=2.6.1
+Requires-Dist: pylint>=2.6.0
+Requires-Dist: pyobjc-core>=6.2.2
+Requires-Dist: pyobjc-framework-Cocoa>=6.2.2
+Requires-Dist: pyobjc-framework-Quartz>=6.2.2
+Requires-Dist: pyparsing>=2.4.7
+Requires-Dist: PyPDF4>=1.27.0
+Requires-Dist: pypdfplot>=0.6.3
+Requires-Dist: PyQt5>=5.12.3
+Requires-Dist: PyQt5-sip>=4.19.18
+Requires-Dist: PyQtChart>=5.12
+Requires-Dist: PyQtWebEngine>=5.12.1
+Requires-Dist: pyrsistent>=0.16.0
+Requires-Dist: PySimpleGUI>=2.30.0
+Requires-Dist: pyspeckit>=0.1.23
+Requires-Dist: pytest>=6.2.4
+Requires-Dist: python-dateutil>=2.8.1
+Requires-Dist: pytz>=2019.3
+Requires-Dist: PyWavelets>=1.1.1
+Requires-Dist: pyzmq>=19.0.0
+Requires-Dist: qtconsole>=4.7.3
+Requires-Dist: QtPy>=1.9.0
+Requires-Dist: regions>=0.4
+Requires-Dist: scikit-image>=0.16.2
+Requires-Dist: scikit-learn>=0.23.1
+Requires-Dist: scipy>=1.6.3
+Requires-Dist: seaborn>=0.11.1
+Requires-Dist: Send2Trash>=1.5.0
+Requires-Dist: Shapely>=1.7.0
+Requires-Dist: six>=1.14.0
+Requires-Dist: statsmodels>=0.11.1
+Requires-Dist: tabulate>=0.8.9
+Requires-Dist: termcolor>=1.1.0
+Requires-Dist: terminado>=0.8.3
+Requires-Dist: testpath>=0.4.4
+Requires-Dist: threadpoolctl>=2.0.0
+Requires-Dist: toml>=0.10.2
+Requires-Dist: tornado>=6.0.4
+Requires-Dist: tqdm>=4.45.0
+Requires-Dist: traitlets>=4.3.3
+Requires-Dist: typed-ast>=1.4.2
+Requires-Dist: varname>=0.8.1
+Requires-Dist: wcwidth>=0.1.9
+Requires-Dist: webencodings>=0.5.1
+Requires-Dist: widgetsnbextension>=3.5.1
+Requires-Dist: wrapt>=1.12.1
+Requires-Dist: yappi>=1.3.1
+Requires-Dist: zepid>=0.9.0
+Requires-Dist: zeus-mcmc>=2.3.0
+Requires-Dist: zipp>=3.1.0
+
+# CONDOR (COsmic Noon Dynamics with Optimised Resolutions)
+
+![logo](images/logo.jpeg)
+
+Introduction
+------------
+
+CONDOR is a kinematic fitting code that finds the best kinematic model of a rotating disk galaxy by combining its high- and low-resolution velocity fields. The code is optimized for data acquired with facilities that use adaptive optics (AO) suchs as OSIRIS (Keck) and SINFONI (VLT) and their natural seeing counterparts (NS) with KMOS (VLT). This sample comprises galaxies in the range z~[1.5,2.5].
+
+The code uses a "2.5D" strategy where input data is in 2D but the modelling happens in three-dimensional space. First, the code creates model datacubes which match the pixelscale of the input data and are convolved using the right shape of the PSF (Airiy Disk + Moffat in AO and Gaussian in NS). Model velocity fields are extracted from the cubes using an emisison line gaussian fit and are then compared to the input data through a MCMC resampling method with [emcee](https://emcee.readthedocs.io/en/stable/emcee). The best kinematic model is thus the model that best represents the input data at both resolutions (or using the individual resolution if desired):
+
+![image](https://user-images.githubusercontent.com/14315715/149685240-cfedff11-254e-4f5e-8bd3-71a6df31d28f.png)
+
+
+Finally, the code calculates the angular momentum content of the galaxy assuming cylindrical axisymmetry and an exponential disk (in the simplest case) for the surface brightness profile:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/14315715/149685218-671363ff-1dff-4399-b25e-b689519ced35.png">
+</p>
+
+For more details on what CONDOR does, see: [Espejo Salcedo et al 2022](https://doi.org/10.1093/mnras/stab2755) 
+
+
+Usage
+-----
+
+Some basic settings need to be applied in order to run the pipeline.
+
+The basic workflow is as follows:
+
+- The main script is called `run_condor.py`. It contains the relevant paths and calls the necessary modules within CONDOR's structure. Make sure you run CONDOR at the location of this script.
+
+- Set up a `data_parameters.csv` file specifying the input parameters for the geometrical deprojection of the disk (inclination, position angle, size, pixelscale), as well as the kinematic parameters such as the "rflat" and "vflat" parameters which characterize the velocity field of the galaxy following a simple exponential disk. Note that these input parameters are merely a first guess that the code will use as priors for the mcmc resampling:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/14315715/149685181-ef4fb779-8143-40e5-a000-60c0b26b9095.png">
+</p>
+
+- The input data are .fits files with the 2D maps of the velocity fields with their corresponding errors, as well as the PSF of each dataset e.g. `galaxy_vel_AO.fits`, `galaxy_vel_NS.fits`, `galaxy_velerr_AO.fits`, `galaxy_velerr_NS.fits`, `galaxy_PSF_AO.fits`, `galaxy_PSF_NS.fits`.
+
+Running the code ⚙️
+--------
+
+Once the main files (`run_condor.py`, `data_parameters.csv` and kinematic maps) are set up correctly, the code is run using: `python run_code.py ID data walkers steps type` with:
+
+**ID** = galaxy identifier (_depends on your own list of targets_)
+
+**data** = ["NS", "AO", "combined"] (_for single or combined analysis_)
+
+**walkers** = number of walkers (_integer, at least ~100 recommended_)
+
+**steps** = number of steps (_integer, at least ~1000 recommended_)
+
+**type** = ["plot","run"] (_to simply plot previous results or rerun the pipeline_)
+
+Examples
+--------
+To run the code for the natural seeing "NS" data only of galaxy with ID 34, with 150 walkers and 2000 steps, do:
+
+    python run_code.py 34 NS 150 2000 run
+
+To run the code combining the resolution, with 100 walkers and 1000 steps, for galaxy with ID 12, do:
+
+    python run_code.py 12 combined 100 1000 run
+
+To run the code for the adaptive optics "AO" data only of galaxy with ID 29, but only to plot previoulsy ran calculations, which simply reads the _**results.csv**_ file, do:
+
+    python run_code.py 29 AO 150 2000 plot
+
+Note that in the last example the number of walkers and steps are ignored so the input values don't have any effect. 
+
+**Example: Deep3a-15504**
+
+As an example of how the code works, here's the analysis of a star-forming galaxy at z~2.38 from the SINS survey. The data was taken at high- and low-spatial resolutions with the SINFONI IFU instrument at VLT targeting its Hα emission. Additionally, this galaxy has _HST_ H- and J-band photometry as shown in the figure below:
+
+<p align="center">
+  <img src="images/Deep3a_15504.png">
+</p>
+
+When running the combined analysis, the code saves the best-fit parameters in the _**results.csv**_ file and generates different figures for the user's assessment. These include the posterior distributions in corner plots, where you can investigate the covariances as in the following example:
+
+<p align="center">
+  <img src="images/Deep3a-15504_combined_corner.png">
+</p>
+
+It will also show you the residual maps (model - data) for user's assessment of the results:
+
+<p align="center">
+  <img src="images/Deep3a-15504_combined_model_and_residuals.png">
+</p>
+
+At last, it will show you the model surface brightness profile of the galaxy (exponential profile in the simplest case) and calculate a cumulative angular momentum profile as shown below:
+
+![img.png](images/SB.png)
+
+
+**NOTE:** Since this code has been optimized for a very specific set of data, setting everything up for your data might require some teaking in the code itself so please feel free to reach out to me if you  need help at jespejosalcedo@swin.edu.au
+
+Further work
+------------
+
+Future versions might include:
+
+- Multiple kinematic models.
+- Complex modelling including bulge-disk decompositions.
+
+Acknowledgements
+---------------
+CONDOR has been written as part of my PhD work at the Centre for Astrophysics and Supercomputing at
+Swinburne University of Technology (2019-2022).
+
+This package uses multiple python libraries including [Numpy](https://numpy.org/install/), [Scipy](https://www.scipy.org/install.html), [Astropy](https://www.astropy.org/), [emcee](https://emcee.readthedocs.io/en/stable/emcee), [matplotlib](https://matplotlib.org/), [pandas](https://pandas.pydata.org/), [itertools](https://docs.python.org/3/library/itertools.html) and [numba](https://numba.pydata.org/). The calculations perfomed in CONDOR are only possible thanks to the efforts of the multiple developers that have written these tools and libraries.
+

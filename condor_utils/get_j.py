@@ -6,7 +6,7 @@ import time
 
 from multiprocessing import Pool
 from copy import copy
-from cosmology_calc import angulardistance
+from condor_utils import cosmology_calc
 import plot_and_save_results as make_plots
 #import plot_and_save_results_clumps as make_plots
 from condor_utils import fitting_functions as my_funcs
@@ -42,7 +42,7 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
 
     if res == 'NS':
 
-        kpc_per_pix = gal.pixscale_ns / 3600 / 180 * np.pi * angulardistance(gal.z_ao) * 1000
+        kpc_per_pix = gal.pixscale_ns / 3600 / 180 * np.pi * cosmology_calc.angulardistance(gal.z_ao) * 1000
         # print(kpc_per_pix)
         # import sys
         # sys.exit()
@@ -92,7 +92,7 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
 
     if res == 'AO':
 
-        kpc_per_pix = gal.pixscale_ao / 3600 / 180 * np.pi * angulardistance(gal.z_ao) * 1000  # Calculate kpc per pixel
+        kpc_per_pix = gal.pixscale_ao / 3600 / 180 * np.pi * cosmology_calc.angulardistance(gal.z_ao) * 1000  # Calculate kpc per pixel
         # print(kpc_per_pix)
         # import sys
         # sys.exit()
@@ -141,7 +141,7 @@ def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
         vmap_er_ao[vmap_er_ao == 0] = np.nan
         ndim = 8
 
-        kpc_per_pix = pixscale[1] / 3600 / 180 * np.pi * angulardistance(gal.z_ao) * 1000
+        kpc_per_pix = pixscale[1] / 3600 / 180 * np.pi * cosmology_calc.angulardistance(gal.z_ao) * 1000
         rflat_lim = 9 / kpc_per_pix
         r_d_pix = gal.r_d / kpc_per_pix
 

@@ -17,7 +17,7 @@ import corner
 import cmasher as cmr
 
 from condor_utils import fitting_functions as my_funcs
-from cosmology_calc import angulardistance
+from condor_utils import cosmology_calc
 
 from scipy.ndimage.filters import gaussian_filter1d
 from scipy.ndimage import gaussian_filter
@@ -463,7 +463,7 @@ def individual(i, j, results, x0_phot, y0_phot, r_d, pixscale, resolution_ratio,
 
         fontprops = fm.FontProperties(size=15)
         ax0.imshow(den_data, cmap=cmr.sunburst, origin='lower', interpolation='nearest')
-        kpc_per_pix_HST = hst_pixscale / 3600 / 180 * np.pi * angulardistance(z) * 1000
+        kpc_per_pix_HST = hst_pixscale / 3600 / 180 * np.pi * cosmology_calc.angulardistance(z) * 1000
         scale = AnchoredSizeBar(ax0.transData, 5 * kpc_per_pix_HST, r"$5\,\, \mathrm{kpc}$", 'lower right',
                                 pad=0.1, color='white', frameon=False, size_vertical=0.4, fontproperties=fontprops)
         arcsec = AnchoredSizeBar(ax0.transData, 0.5 / hst_pixscale, r'$0.5"$', 'lower left',

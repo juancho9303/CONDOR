@@ -1,8 +1,10 @@
 README.md
 setup.py
 condor_utils/__init__.py
+condor_utils/cosmology_calc.py
 condor_utils/fitting_functions.py
-condor_utils/utils.py
+condor_utils/galaxy.py
+condor_utils/get_j.py
 condor_utils.egg-info/PKG-INFO
 condor_utils.egg-info/SOURCES.txt
 condor_utils.egg-info/dependency_links.txt

@@ -1,3 +1,5 @@
 build
 condor_utils/__pycache__/*
+modules/__pycache__/*
+plotting_scripts/__pycache__/*
 __pycache__/*

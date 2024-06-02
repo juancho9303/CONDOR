@@ -18,7 +18,7 @@ Finally, the code calculates the angular momentum content of the galaxy assuming
   <img src="https://user-images.githubusercontent.com/14315715/149685218-671363ff-1dff-4399-b25e-b689519ced35.png">
 </p>
 
-For more details on what CONDOR does, see: [Espejo Salcedo et al 2022](https://doi.org/10.1093/mnras/stab2755) 
+For more details on what CONDOR does, see: [Espejo Salcedo et al 2022](https://doi.org/10.1093/mnras/stab2755). Note that the code was specifically designed for the analysis of a sample of galaxies at z~2.5 and might require some tweaking for other datasets.
 
 
 Usage
@@ -94,7 +94,7 @@ At last, it will show you the model surface brightness profile of the galaxy (ex
 ![img.png](images/SB.png)
 
 
-**NOTE:** Since this code has been optimized for a very specific set of data, setting everything up for your data might require some teaking in the code itself so please feel free to reach out to me if you  need help at jespejosalcedo@swin.edu.au
+**NOTE:** Since this code has been optimized for a very specific set of data, setting everything up for your data might require some teaking in the code itself so please feel free to reach out to me if you  need help at jespejosalcedo@swin.edu.au and jespejo@mpe.mpg.de.
 
 Further work
 ------------

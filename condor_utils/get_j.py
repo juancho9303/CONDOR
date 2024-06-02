@@ -15,6 +15,19 @@ warnings.filterwarnings("ignore")
 
 #@profile
 def get_j(i, gal, maps, results, res, nwalkers, steps, type_run):
+    """
+    This function runs the MCMC resampling for the galaxy i, and saves the results in a file.
+    :param i: galaxy number
+    :param gal: galaxy object
+    :param maps: list of maps
+    :param results: results from the previous run (or table)
+    :param res: resolution to run the MCMC
+    :param nwalkers: number of walkers
+    :param steps: number of steps
+    :param type_run: type of run (run or plot)
+    :return: None
+    """
+    
 
     pixscale = [gal.pixscale_ns, gal.pixscale_ao]
     sigma_ns = gal.psf_fwhm_mine_ns / 2.35 / gal.pixscale_ns

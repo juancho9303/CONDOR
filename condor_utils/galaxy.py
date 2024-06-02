@@ -2,6 +2,10 @@ import numpy as np
 from . import fitting_functions as funcs
 
 class Galaxy:
+    
+    """
+    This class defines a galaxy object, with all the parameters needed to run the MCMC resampling.
+    """
 
     def __init__(self, name, z_ns, halpha_ns, velmax_ns, reff_kpc, psf_fwhm_NS_paper, maxbin_ns, x0_ns, y0_ns,
                  pafit_ns, pixscale_ns, SFR, M_s, type_ns, phot_file_name, phot_data, H_band, J_band, psf_fwhm_h, psf_fwhm_j,

@@ -1,6 +1,7 @@
 """
 Created on 2020
-@author: Juan Espejo @ jespejosalcedo@swin.edu.au
+@author: Juan Espejo @ jespejosalcedo@swin.edu.au, jespejo@mpe.mpg.de
+
 
 This script does the full kinematic modelling of the disk galaxies by doing:
 
